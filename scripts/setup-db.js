@@ -39,6 +39,7 @@ async function setupDatabase() {
       console.log('👤 Creating admin user...')
 
       const hashedPassword = await bcrypt.hash('admin', 10)
+      console.log('🔑 Password:', hashedPassword)
 
       const adminUser = await prisma.user.create({
         data: {
