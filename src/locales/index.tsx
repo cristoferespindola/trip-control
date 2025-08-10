@@ -23,15 +23,19 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('pt');
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'pt' || savedLanguage === 'en')) {
-      setLanguage(savedLanguage);
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('language') as Language;
+      if (savedLanguage && (savedLanguage === 'pt' || savedLanguage === 'en')) {
+        setLanguage(savedLanguage);
+      }
     }
   }, []);
 
   const setLanguageAndSave = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
   };
 
   const t = (key: string): string => {
