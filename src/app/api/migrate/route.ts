@@ -16,12 +16,20 @@ export async function POST(request: NextRequest) {
 
       // Create UserRole enum
       await prisma.$executeRaw`
-        CREATE TYPE IF NOT EXISTS "UserRole" AS ENUM ('ADMIN', 'USER')
+        DO $$ BEGIN
+          CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
+        EXCEPTION
+          WHEN duplicate_object THEN null;
+        END $$;
       `
 
       // Create UserStatus enum
       await prisma.$executeRaw`
-        CREATE TYPE IF NOT EXISTS "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE')
+        DO $$ BEGIN
+          CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE');
+        EXCEPTION
+          WHEN duplicate_object THEN null;
+        END $$;
       `
 
       // Create User table
