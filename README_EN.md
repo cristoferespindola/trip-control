@@ -9,12 +9,14 @@ Complete system for fleet, drivers, clients, and trip management. Built with Nex
 ## 🚀 Deploy to Vercel
 
 ### Prerequisites
+
 - [Vercel](https://vercel.com) account
 - PostgreSQL database (we recommend [Neon](https://neon.tech) or [Supabase](https://supabase.com))
 
 ### Deployment Steps
 
 1. **Fork/Clone the repository**
+
    ```bash
    git clone <your-repository>
    cd trip-control
@@ -79,21 +81,25 @@ npm run dev
 ## 📊 Features
 
 ### 🚗 Vehicle Management
+
 - Vehicle registration with license plate, model, brand, year
 - Capacity and status control
 - Trip history per vehicle
 
 ### 👨‍💼 Driver Management
+
 - Complete driver registration
 - License and status control
 - Trip history per driver
 
 ### 🏢 Client Management
+
 - Client registration (individual and corporate)
 - CPF/CNPJ control and status
 - Trip history per client
 
 ### 🗺️ Trip Management
+
 - Complete trip registration
 - IBGE API integration for cities
 - Cost control (fuel, toll, others)
@@ -103,6 +109,7 @@ npm run dev
 ## 🏗️ Architecture
 
 ### Frontend
+
 - **Next.js 14** with App Router
 - **TypeScript** for static typing
 - **Tailwind CSS** for styling
@@ -110,11 +117,13 @@ npm run dev
 - **Heroicons** for icons
 
 ### Backend
+
 - **Next.js API Routes**
 - **Prisma ORM** for database
 - **PostgreSQL** as main database
 
 ### Database
+
 - **Prisma Schema** with relationships
 - **Migrations** for version control
 - **Seed** for initial data
@@ -153,6 +162,7 @@ trip-control/
 ## 🔧 Database Configuration
 
 ### Local PostgreSQL (macOS)
+
 ```bash
 # Install PostgreSQL
 brew install postgresql
@@ -168,6 +178,7 @@ echo 'DATABASE_URL="postgresql://cristoferespindola@localhost:5432/trip_control?
 ```
 
 ### Migrations
+
 ```bash
 # Generate migration
 npx prisma migrate dev --name init
@@ -182,12 +193,14 @@ npx prisma migrate reset
 ## 🎨 Interface
 
 ### Design System
+
 - **Colors**: Orange (#f97316) as primary color
 - **Typography**: Tailwind font system
 - **Components**: Modals, forms, responsive tables
 - **Responsiveness**: Mobile-first design
 
 ### Main Components
+
 - **Modal**: Sliding modal system
 - **Layout**: Navigation with active page indicator
 - **Forms**: Optimized validation and UX
@@ -196,12 +209,14 @@ npx prisma migrate reset
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
+
 - Automatic deployment via Git
 - PostgreSQL integration
 - Automatic SSL
 - Global CDN
 
 ### Other Platforms
+
 - **Railway**: Native PostgreSQL support
 - **Netlify**: Works with adaptations
 - **Heroku**: Complete support

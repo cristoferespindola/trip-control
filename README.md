@@ -9,12 +9,14 @@ Sistema completo para gerenciamento de frota, motoristas, clientes e viagens. De
 ## 🚀 Deploy na Vercel
 
 ### Pré-requisitos
+
 - Conta na [Vercel](https://vercel.com)
 - Banco de dados PostgreSQL (recomendamos [Neon](https://neon.tech) ou [Supabase](https://supabase.com))
 
 ### Passos para Deploy
 
 1. **Fork/Clone o repositório**
+
    ```bash
    git clone <seu-repositorio>
    cd trip-control
@@ -79,21 +81,25 @@ npm run dev
 ## 📊 Funcionalidades
 
 ### 🚗 Gestão de Veículos
+
 - Cadastro de veículos com placa, modelo, marca, ano
 - Controle de capacidade e status
 - Histórico de viagens por veículo
 
 ### 👨‍💼 Gestão de Motoristas
+
 - Cadastro completo de motoristas
 - Controle de CNH e status
 - Histórico de viagens por motorista
 
 ### 🏢 Gestão de Clientes
+
 - Cadastro de clientes (pessoa física e jurídica)
 - Controle de CPF/CNPJ e status
 - Histórico de viagens por cliente
 
 ### 🗺️ Gestão de Viagens
+
 - Registro completo de viagens
 - Integração com API do IBGE para cidades
 - Controle de custos (combustível, pedágio, outros)
@@ -103,6 +109,7 @@ npm run dev
 ## 🏗️ Arquitetura
 
 ### Frontend
+
 - **Next.js 14** com App Router
 - **TypeScript** para tipagem estática
 - **Tailwind CSS** para estilização
@@ -110,11 +117,13 @@ npm run dev
 - **Heroicons** para ícones
 
 ### Backend
+
 - **API Routes** do Next.js
 - **Prisma ORM** para banco de dados
 - **PostgreSQL** como banco principal
 
 ### Banco de Dados
+
 - **Prisma Schema** com relacionamentos
 - **Migrations** para controle de versão
 - **Seed** para dados iniciais
@@ -153,6 +162,7 @@ trip-control/
 ## 🔧 Configuração do Banco
 
 ### PostgreSQL Local (macOS)
+
 ```bash
 # Instalar PostgreSQL
 brew install postgresql
@@ -168,6 +178,7 @@ echo 'DATABASE_URL="postgresql://cristoferespindola@localhost:5432/trip_control?
 ```
 
 ### Migrations
+
 ```bash
 # Gerar migration
 npx prisma migrate dev --name init
@@ -182,12 +193,14 @@ npx prisma migrate reset
 ## 🎨 Interface
 
 ### Design System
+
 - **Cores**: Laranja (#f97316) como cor principal
 - **Tipografia**: Sistema de fontes do Tailwind
 - **Componentes**: Modais, formulários, tabelas responsivas
 - **Responsividade**: Mobile-first design
 
 ### Componentes Principais
+
 - **Modal**: Sistema de modais deslizantes
 - **Layout**: Navegação com indicador de página ativa
 - **Formulários**: Validação e UX otimizada
@@ -196,12 +209,14 @@ npx prisma migrate reset
 ## 🚀 Deploy
 
 ### Vercel (Recomendado)
+
 - Deploy automático via Git
 - Integração com PostgreSQL
 - SSL automático
 - CDN global
 
 ### Outras Plataformas
+
 - **Railway**: Suporte nativo ao PostgreSQL
 - **Netlify**: Funciona com adaptações
 - **Heroku**: Suporte completo
@@ -224,4 +239,4 @@ Para suporte, envie um email para [seu-email@exemplo.com] ou abra uma issue no G
 
 ---
 
-Desenvolvido com ❤️ usando Next.js, Prisma e Tailwind CSS. 
+Desenvolvido com ❤️ usando Next.js, Prisma e Tailwind CSS.
