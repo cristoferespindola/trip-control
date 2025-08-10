@@ -53,11 +53,8 @@ export interface Trip {
   destination: string
   departureDate: Date
   returnDate?: Date
-  distance?: number
-  fuelCost?: number
-  tollCost?: number
-  otherCosts?: number
-  totalCost?: number
+  initialKilometer?: number
+  finalKilometer?: number
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
   notes?: string
   vehicleId: string
@@ -68,6 +65,24 @@ export interface Trip {
   driver?: Driver
   client?: Client
   user?: User
+  expenses?: Expense[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Expense {
+  id: string
+  name: string
+  value: number
+  date: Date
+  type: 'MAINTENANCE' | 'TOLL' | 'FUEL' | 'FOOD' | 'OTHER'
+  notes?: string
+  tripId: string
+  driverId: string
+  vehicleId: string
+  trip?: Trip
+  driver?: Driver
+  vehicle?: Vehicle
   createdAt: Date
   updatedAt: Date
 }

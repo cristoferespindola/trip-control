@@ -35,11 +35,8 @@ export default function TripModal({
     destination: '',
     departureDate: '',
     returnDate: '',
-    distance: '',
-    fuelCost: '',
-    tollCost: '',
-    otherCosts: '',
-    totalCost: '',
+    initialKilometer: '',
+    finalKilometer: '',
     status: 'SCHEDULED' as
       | 'SCHEDULED'
       | 'IN_PROGRESS'
@@ -230,62 +227,26 @@ export default function TripModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Distância (km)"
-            name="distance"
+            label="Kilometragem Inicial"
+            name="initialKilometer"
             type="number"
-            value={formData.distance}
+            value={formData.initialKilometer}
             onChange={e =>
-              setFormData({ ...formData, distance: e.target.value })
+              setFormData({ ...formData, initialKilometer: e.target.value })
             }
             placeholder="0"
             required={false}
           />
 
           <Input
-            label="Custo Combustível"
-            name="fuelCost"
+            label="Kilometragem Final"
+            name="finalKilometer"
             type="number"
-            value={formData.fuelCost}
+            value={formData.finalKilometer}
             onChange={e =>
-              setFormData({ ...formData, fuelCost: e.target.value })
+              setFormData({ ...formData, finalKilometer: e.target.value })
             }
-            placeholder="0.00"
-            required={false}
-          />
-
-          <Input
-            label="Custo Pedágio"
-            name="tollCost"
-            type="number"
-            value={formData.tollCost}
-            onChange={e =>
-              setFormData({ ...formData, tollCost: e.target.value })
-            }
-            placeholder="0.00"
-            required={false}
-          />
-
-          <Input
-            label="Outros Custos"
-            name="otherCosts"
-            type="number"
-            value={formData.otherCosts}
-            onChange={e =>
-              setFormData({ ...formData, otherCosts: e.target.value })
-            }
-            placeholder="0.00"
-            required={false}
-          />
-
-          <Input
-            label="Custo Total"
-            name="totalCost"
-            type="number"
-            value={formData.totalCost}
-            onChange={e =>
-              setFormData({ ...formData, totalCost: e.target.value })
-            }
-            placeholder="0.00"
+            placeholder="0"
             required={false}
           />
         </div>

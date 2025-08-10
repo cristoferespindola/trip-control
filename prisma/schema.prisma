@@ -40,6 +40,7 @@ model Vehicle {
 
   // Relantionship
   trips Trip[]
+  expenses Expense[]
 
   @@map("vehicles")
 }
@@ -58,6 +59,7 @@ model Driver {
 
   // Relantionship
   trips Trip[]
+  expenses Expense[]
 
   @@map("drivers")
 }
@@ -86,11 +88,8 @@ model Trip {
   destination  String
   departureDate DateTime
   returnDate   DateTime?
-  distance     Float?
-  fuelCost     Float?
-  tollCost     Float?
-  otherCosts   Float?
-  totalCost    Float?
+  initialKilometer Int?
+  finalKilometer   Int?
   status       TripStatus  @default(SCHEDULED)
   notes        String?
   createdAt    DateTime    @default(now())
@@ -99,17 +98,43 @@ model Trip {
   // Relantionship
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  
+
   driverId String
   driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  
+
   clientId String
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Relantionship
+  expenses Expense[]
+
   @@map("trips")
+}
+
+model Expense {
+  id        String       @id @default(cuid())
+  name      String
+  value     Float
+  date      DateTime
+  type      ExpenseType
+  notes     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relantionship
+  tripId String
+  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  driverId String
+  driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("expenses")
 }
 
 enum UserRole {
@@ -148,4 +173,12 @@ enum TripStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum ExpenseType {
+  MAINTENANCE
+  TOLL
+  FUEL
+  FOOD
+  OTHER
 }

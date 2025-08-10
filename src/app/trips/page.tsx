@@ -11,10 +11,14 @@ import {
   TrashIcon,
   FunnelIcon,
   XMarkIcon,
+  CurrencyDollarIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline'
 import { Trip, Vehicle, Driver, Client, City } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import TripModal from './TripModal'
+import ExpenseModal from './ExpenseModal'
+import TripViewModal from './TripViewModal'
 import Input from '../../components/form/Input'
 import Select from '../../components/form/Select'
 import CitySelect from '../../components/cities'
@@ -29,6 +33,9 @@ export default function TripsPage() {
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [filters, setFilters] = useState({
     origin: '',
     destination: '',
@@ -284,6 +291,34 @@ export default function TripsPage() {
     })
   }
 
+  const handleViewTrip = async (trip: Trip) => {
+    try {
+      const response = await fetch(`/api/trips/${trip.id}/expenses`)
+      if (response.ok) {
+        const tripWithExpenses = await response.json()
+        setSelectedTrip(tripWithExpenses)
+        setIsViewModalOpen(true)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da viagem:', error)
+    }
+  }
+
+  const handleExpenses = (trip: Trip) => {
+    setSelectedTrip(trip)
+    setIsExpenseModalOpen(true)
+  }
+
+  const closeExpenseModal = () => {
+    setIsExpenseModalOpen(false)
+    setSelectedTrip(null)
+  }
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false)
+    setSelectedTrip(null)
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -488,14 +523,30 @@ export default function TripsPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
+                      onClick={() => handleViewTrip(trip)}
+                      className="text-gray-400 hover:text-blue-600"
+                      title="Visualizar viagem"
+                    >
+                      <EyeIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleExpenses(trip)}
+                      className="text-gray-400 hover:text-green-600"
+                      title="Gerenciar despesas"
+                    >
+                      <CurrencyDollarIcon className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={() => handleEdit(trip)}
                       className="text-gray-400 hover:text-gray-600"
+                      title="Editar viagem"
                     >
                       <PencilIcon className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(trip.id)}
                       className="text-gray-400 hover:text-red-600"
+                      title="Excluir viagem"
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>
@@ -515,6 +566,18 @@ export default function TripsPage() {
         drivers={drivers}
         clients={clients}
         onSubmit={handleSubmit}
+      />
+
+      <ExpenseModal
+        open={isExpenseModalOpen}
+        onClose={closeExpenseModal}
+        trip={selectedTrip}
+      />
+
+      <TripViewModal
+        open={isViewModalOpen}
+        onClose={closeViewModal}
+        trip={selectedTrip}
       />
     </div>
   )
