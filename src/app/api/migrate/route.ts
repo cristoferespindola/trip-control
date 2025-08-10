@@ -15,26 +15,16 @@ export async function POST(request: NextRequest) {
       console.log('👥 Creating User table...')
 
       // Create UserRole enum
-      await prisma.$executeRaw`
-        DO $$ BEGIN
-          CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
-        EXCEPTION
-          WHEN duplicate_object THEN null;
-        END $$;
-      `
+      await prisma.$executeRaw`CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER')`
+      console.log('✅ UserRole enum created')
 
       // Create UserStatus enum
-      await prisma.$executeRaw`
-        DO $$ BEGIN
-          CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE');
-        EXCEPTION
-          WHEN duplicate_object THEN null;
-        END $$;
-      `
+      await prisma.$executeRaw`CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE')`
+      console.log('✅ UserStatus enum created')
 
       // Create User table
       await prisma.$executeRaw`
-        CREATE TABLE IF NOT EXISTS "User" (
+        CREATE TABLE "User" (
           "id" TEXT NOT NULL,
           "username" TEXT NOT NULL,
           "email" TEXT NOT NULL,
@@ -47,7 +37,6 @@ export async function POST(request: NextRequest) {
           CONSTRAINT "User_pkey" PRIMARY KEY ("id")
         )
       `
-
       console.log('✅ User table created')
     }
 
