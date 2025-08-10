@@ -1,3 +1,5 @@
+**[🇺🇸 See English Version](./DEPLOY_EN.md)**
+
 # 🚀 Guia de Deploy na Vercel
 
 Este guia te ajudará a fazer o deploy do TripControl na Vercel de forma rápida e eficiente.
