@@ -188,3 +188,4 @@ Após o primeiro deploy:
 🎉 **Parabéns!** Seu TripControl está no ar!
 
 **URL do projeto**: https://seu-projeto.vercel.app
+

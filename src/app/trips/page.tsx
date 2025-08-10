@@ -1,217 +1,241 @@
 'use client'
 
-import { getCities } from '@/models/cities'
-import { City, Client, Driver, Trip, Vehicle } from '@/types'
 import { useState, useEffect } from 'react'
+import { TruckIcon, UserGroupIcon, BuildingOfficeIcon, MapIcon, PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal'
+import { Trip, Vehicle, Driver, Client, City } from '@/types'
 
 export default function TripsPage() {
   const [trips, setTrips] = useState<Trip[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [drivers, setDrivers] = useState<Driver[]>([])
   const [clients, setClients] = useState<Client[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [cities, setCities] = useState<City[]>([])
-  const [filteredCities, setFilteredCities] = useState<City[]>([])
-  const [showOriginDropdown, setShowOriginDropdown] = useState(false)
-  const [showDestinationDropdown, setShowDestinationDropdown] = useState(false)
-  const [originSearch, setOriginSearch] = useState('')
-  const [destinationSearch, setDestinationSearch] = useState('')
+  const [isLoadingCities, setIsLoadingCities] = useState(false)
+
+  const [formData, setFormData] = useState({
+    vehicleId: '',
+    driverId: '',
+    clientId: '',
+    origin: '',
+    destination: '',
+    departureDate: '',
+    returnDate: '',
+    status: 'SCHEDULED' as const,
+    notes: ''
+  })
 
   useEffect(() => {
-    fetchData()
-    getCities().then(response => {
-      setCities(response.data)
-    })
+    fetchTrips()
+    fetchVehicles()
+    fetchDrivers()
+    fetchClients()
   }, [])
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      if (!target.closest('.city-dropdown')) {
-        setShowOriginDropdown(false)
-        setShowDestinationDropdown(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
-
-  const normalizeText = (text: string) => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-      .replace(/[^a-z0-9\s]/g, '') // Remove caracteres especiais
-      .trim()
-  }
-
-  const fetchData = async () => {
+  const fetchTrips = async () => {
     try {
-      const [tripsRes, vehiclesRes, driversRes, clientsRes] = await Promise.all([
-        fetch('/api/trips'),
-        fetch('/api/vehicles'),
-        fetch('/api/drivers'),
-        fetch('/api/clients')
-      ])
-      
-      const tripsData = await tripsRes.json()
-      const vehiclesData = await vehiclesRes.json()
-      const driversData = await driversRes.json()
-      const clientsData = await clientsRes.json()
-      
-      setTrips(tripsData)
-      setVehicles(vehiclesData)
-      setDrivers(driversData)
-      setClients(clientsData)
+      const response = await fetch('/api/trips')
+      if (response.ok) {
+        const data = await response.json()
+        setTrips(data)
+      }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error)
+      console.error('Erro ao buscar viagens:', error)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
-  const formatCityName = (city: City) => {
-    if (!city || !city.microrregiao || !city.microrregiao.mesorregiao || !city.microrregiao.mesorregiao.UF) {
-      return city?.nome || 'Cidade desconhecida'
-    }
-    return `${city.nome} - ${city.microrregiao.mesorregiao.UF.sigla}`
-  }
-
-  const filterCities = (search: string, setFiltered: (cities: City[]) => void) => {
-    if (search.length < 2) {
-      setFiltered([])
-      return
-    }
-    
-    const normalizedSearch = normalizeText(search)
-    const filtered = cities.filter(city => {
-      if (!city || !city.nome) return false
-      
-      const cityName = normalizeText(city.nome)
-      const searchTerm = normalizedSearch
-      
-      // Busca por nome da cidade
-      if (cityName.includes(searchTerm)) return true
-      
-      // Busca por estado (se disponível)
-      if (city.microrregiao?.mesorregiao?.UF?.nome) {
-        const stateName = normalizeText(city.microrregiao.mesorregiao.UF.nome)
-        if (stateName.includes(searchTerm)) return true
-      }
-      
-      // Busca por sigla do estado (se disponível)
-      if (city.microrregiao?.mesorregiao?.UF?.sigla) {
-        const stateSigla = normalizeText(city.microrregiao.mesorregiao.UF.sigla)
-        if (stateSigla.includes(searchTerm)) return true
-      }
-      
-      return false
-    }).slice(0, 10)
-    
-    setFiltered(filtered)
-  }
-
-  const handleOriginSearch = (value: string) => {
-    setOriginSearch(value)
-    filterCities(value, setFilteredCities)
-    setShowOriginDropdown(true)
-  }
-
-  const handleDestinationSearch = (value: string) => {
-    setDestinationSearch(value)
-    filterCities(value, setFilteredCities)
-    setShowDestinationDropdown(true)
-  }
-
-  const selectOrigin = (city: City) => {
-    setOriginSearch(formatCityName(city))
-    setShowOriginDropdown(false)
-  }
-
-  const selectDestination = (city: City) => {
-    setDestinationSearch(formatCityName(city))
-    setShowDestinationDropdown(false)
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja deletar esta viagem?')) return
-
+  const fetchVehicles = async () => {
     try {
-      await fetch(`/api/trips/${id}`, { method: 'DELETE' })
-      fetchData()
+      const response = await fetch('/api/vehicles')
+      if (response.ok) {
+        const data = await response.json()
+        setVehicles(data)
+      }
     } catch (error) {
-      console.error('Erro ao deletar viagem:', error)
+      console.error('Erro ao buscar veículos:', error)
+    }
+  }
+
+  const fetchDrivers = async () => {
+    try {
+      const response = await fetch('/api/drivers')
+      if (response.ok) {
+        const data = await response.json()
+        setDrivers(data)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar motoristas:', error)
+    }
+  }
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients')
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingTrip ? `/api/trips/${editingTrip.id}` : '/api/trips'
+      const method = editingTrip ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setIsModalOpen(false)
+        setEditingTrip(null)
+        resetForm()
+        fetchTrips()
+      } else {
+        const error = await response.json()
+        alert(`Erro: ${error.message}`)
+      }
+    } catch (error) {
+      console.error('Erro ao salvar viagem:', error)
+      alert('Erro ao salvar viagem')
     }
   }
 
   const handleEdit = (trip: Trip) => {
     setEditingTrip(trip)
-    setOriginSearch(trip.origin)
-    setDestinationSearch(trip.destination)
-    setShowModal(true)
+    setFormData({
+      vehicleId: trip.vehicleId,
+      driverId: trip.driverId,
+      clientId: trip.clientId,
+      origin: trip.origin,
+      destination: trip.destination,
+      departureDate: trip.departureDate.split('T')[0],
+      returnDate: trip.returnDate ? trip.returnDate.split('T')[0] : '',
+      status: trip.status,
+      notes: trip.notes || ''
+    })
+    setIsModalOpen(true)
   }
 
-  const handleNewTrip = () => {
-    setEditingTrip(null)
-    setOriginSearch('')
-    setDestinationSearch('')
-    setShowModal(true)
-  }
-
-  const handleCloseModal = () => {
-    setShowModal(false)
-    setEditingTrip(null)
-    setOriginSearch('')
-    setDestinationSearch('')
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      origin: originSearch,
-      destination: destinationSearch,
-      departureDate: formData.get('departureDate') as string,
-      returnDate: formData.get('returnDate') as string,
-      distance: formData.get('distance') as string,
-      fuelCost: formData.get('fuelCost') as string,
-      tollCost: formData.get('tollCost') as string,
-      otherCosts: formData.get('otherCosts') as string,
-      status: formData.get('status') as string,
-      notes: formData.get('notes') as string,
-      vehicleId: formData.get('vehicleId') as string,
-      driverId: formData.get('driverId') as string,
-      clientId: formData.get('clientId') as string
-    }
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir esta viagem?')) return
 
     try {
-      const url = editingTrip 
-        ? `/api/trips/${editingTrip.id}`
-        : '/api/trips'
-      
-      const method = editingTrip ? 'PUT' : 'POST'
-      
-      await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      const response = await fetch(`/api/trips/${id}`, {
+        method: 'DELETE',
       })
-      
-      handleCloseModal()
-      fetchData()
+
+      if (response.ok) {
+        fetchTrips()
+      } else {
+        const error = await response.json()
+        alert(`Erro: ${error.message}`)
+      }
     } catch (error) {
-      console.error('Erro ao salvar viagem:', error)
+      console.error('Erro ao excluir viagem:', error)
+      alert('Erro ao excluir viagem')
     }
   }
 
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('pt-BR')
+  const resetForm = () => {
+    setFormData({
+      vehicleId: '',
+      driverId: '',
+      clientId: '',
+      origin: '',
+      destination: '',
+      departureDate: '',
+      returnDate: '',
+      status: 'SCHEDULED',
+      notes: ''
+    })
+  }
+
+  const openModal = () => {
+    setEditingTrip(null)
+    resetForm()
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setEditingTrip(null)
+    resetForm()
+  }
+
+  const normalizeText = (text: string) => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+  }
+
+  const searchCities = async (query: string) => {
+    if (query.length < 2) {
+      setCities([])
+      return
+    }
+
+    setIsLoadingCities(true)
+    try {
+      const response = await fetch(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?nome=${encodeURIComponent(query)}`
+      )
+      
+      if (response.ok) {
+        const data = await response.json()
+        const filteredCities = filterCities(data, query)
+        setCities(filteredCities.slice(0, 10))
+      } else {
+        setCities([])
+      }
+    } catch (error) {
+      console.error('Erro ao buscar cidades:', error)
+      setCities([])
+    } finally {
+      setIsLoadingCities(false)
+    }
+  }
+
+  const filterCities = (cities: any[], query: string) => {
+    const normalizedQuery = normalizeText(query)
+    
+    return cities
+      .filter((city: any) => {
+        const cityName = normalizeText(city.nome)
+        const stateName = normalizeText(city.microrregiao?.mesorregiao?.UF?.nome || '')
+        return cityName.includes(normalizedQuery) || stateName.includes(normalizedQuery)
+      })
+      .sort((a: any, b: any) => {
+        const aName = normalizeText(a.nome)
+        const bName = normalizeText(b.nome)
+        const aStartsWithQuery = aName.startsWith(normalizedQuery)
+        const bStartsWithQuery = bName.startsWith(normalizedQuery)
+        
+        if (aStartsWithQuery && !bStartsWithQuery) return -1
+        if (!aStartsWithQuery && bStartsWithQuery) return 1
+        return aName.localeCompare(bName)
+      })
+  }
+
+  const formatCityName = (city: City) => {
+    const stateName = city.microrregiao?.mesorregiao?.UF?.nome || ''
+    return `${city.nome} - ${stateName}`
   }
 
   const getStatusColor = (status: string) => {
@@ -234,334 +258,288 @@ export default function TripsPage() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Carregando...</div>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      </div>
     )
   }
 
   return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Viagens</h1>
-          <button
-            onClick={handleNewTrip}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors duration-200"
-          >
-            Nova Viagem
-          </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Viagens</h1>
+          <p className="text-gray-600">Gerencie as viagens da sua frota</p>
         </div>
-
-        {/* Modal */}
-        <Modal
-          open={showModal}
-          onClose={handleCloseModal}
-          title={editingTrip ? 'Editar Viagem' : 'Nova Viagem'}
-          size="xl"
+        <button
+          onClick={openModal}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative city-dropdown">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Origem</label>
-                <input
-                  type="text"
-                  value={originSearch}
-                  onChange={(e) => handleOriginSearch(e.target.value)}
-                  onFocus={() => setShowOriginDropdown(true)}
-                  placeholder="Digite para buscar cidade..."
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900 placeholder-gray-500"
-                />
-                {showOriginDropdown && filteredCities.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                    {filteredCities.map((city) => (
-                      <div
-                        key={city.id}
-                        onClick={() => selectOrigin(city)}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
-                      >
-                        {formatCityName(city)}
+          <PlusIcon className="h-4 w-4 mr-2" />
+          Nova Viagem
+        </button>
+      </div>
+
+      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul className="divide-y divide-gray-200">
+          {trips.map((trip) => {
+            const vehicle = vehicles.find(v => v.id === trip.vehicleId)
+            const driver = drivers.find(d => d.id === trip.driverId)
+            const client = clients.find(c => c.id === trip.clientId)
+            
+            return (
+              <li key={trip.id} className="px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-3">
+                      <MapIcon className="h-5 w-5 text-gray-400" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {trip.origin} → {trip.destination}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>{vehicle?.plate} • {driver?.name} • {client?.name}</span>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}>
+                            {getStatusText(trip.status)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          {new Date(trip.departureDate).toLocaleDateString('pt-BR')}
+                          {trip.returnDate && ` - ${new Date(trip.returnDate).toLocaleDateString('pt-BR')}`}
+                        </p>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              <div className="relative city-dropdown">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Destino</label>
-                <input
-                  type="text"
-                  value={destinationSearch}
-                  onChange={(e) => handleDestinationSearch(e.target.value)}
-                  onFocus={() => setShowDestinationDropdown(true)}
-                  placeholder="Digite para buscar cidade..."
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900 placeholder-gray-500"
-                />
-                {showDestinationDropdown && filteredCities.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                    {filteredCities.map((city) => (
-                      <div
-                        key={city.id}
-                        onClick={() => selectDestination(city)}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
-                      >
-                        {formatCityName(city)}
-                      </div>
-                    ))}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleEdit(trip)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(trip.id)}
+                      className="text-gray-400 hover:text-red-600"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
                   </div>
-                )}
-              </div>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Data de Partida</label>
-                <input
-                  type="datetime-local"
-                  name="departureDate"
-                  defaultValue={editingTrip?.departureDate ? new Date(editingTrip.departureDate).toISOString().slice(0, 16) : ''}
-                  required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Data de Retorno</label>
-                <input
-                  type="datetime-local"
-                  name="returnDate"
-                  defaultValue={editingTrip?.returnDate ? new Date(editingTrip.returnDate).toISOString().slice(0, 16) : ''}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Veículo</label>
-                <select
-                  name="vehicleId"
-                  defaultValue={editingTrip?.vehicleId || ''}
-                  required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                >
-                  <option value="">Selecione um veículo</option>
-                  {vehicles.map((vehicle) => (
-                    <option key={vehicle.id} value={vehicle.id}>
-                      {vehicle.plate} - {vehicle.brand} {vehicle.model}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Motorista</label>
-                <select
-                  name="driverId"
-                  defaultValue={editingTrip?.driverId || ''}
-                  required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                >
-                  <option value="">Selecione um motorista</option>
-                  {drivers.map((driver) => (
-                    <option key={driver.id} value={driver.id}>
-                      {driver.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Cliente</label>
-                <select
-                  name="clientId"
-                  defaultValue={editingTrip?.clientId || ''}
-                  required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                >
-                  <option value="">Selecione um cliente</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Status</label>
-                <select
-                  name="status"
-                  defaultValue={editingTrip?.status || 'SCHEDULED'}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                >
-                  <option value="SCHEDULED">Agendada</option>
-                  <option value="IN_PROGRESS">Em Andamento</option>
-                  <option value="COMPLETED">Concluída</option>
-                  <option value="CANCELLED">Cancelada</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Distância (km)</label>
-                <input
-                  type="number"
-                  name="distance"
-                  defaultValue={editingTrip?.distance || ''}
-                  min="0"
-                  step="0.1"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                  placeholder="0"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Custo Combustível (R$)</label>
-                <input
-                  type="number"
-                  name="fuelCost"
-                  defaultValue={editingTrip?.fuelCost || ''}
-                  min="0"
-                  step="0.01"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Custo Pedágio (R$)</label>
-                <input
-                  type="number"
-                  name="tollCost"
-                  defaultValue={editingTrip?.tollCost || ''}
-                  min="0"
-                  step="0.01"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Outros Custos (R$)</label>
-                <input
-                  type="number"
-                  name="otherCosts"
-                  defaultValue={editingTrip?.otherCosts || ''}
-                  min="0"
-                  step="0.01"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                  placeholder="0.00"
-                />
-              </div>
+      <Modal
+        open={isModalOpen}
+        onClose={closeModal}
+        title={editingTrip ? 'Editar Viagem' : 'Nova Viagem'}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Veículo
+              </label>
+              <select
+                value={formData.vehicleId}
+                onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                required
+              >
+                <option value="">Selecione um veículo</option>
+                {vehicles.map((vehicle) => (
+                  <option key={vehicle.id} value={vehicle.id}>
+                    {vehicle.plate} - {vehicle.brand} {vehicle.model}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Observações</label>
-              <textarea
-                name="notes"
-                defaultValue={editingTrip?.notes || ''}
-                rows={3}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="Observações sobre a viagem..."
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Motorista
+              </label>
+              <select
+                value={formData.driverId}
+                onChange={(e) => setFormData({ ...formData, driverId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                required
+              >
+                <option value="">Selecione um motorista</option>
+                {drivers.map((driver) => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cliente
+              </label>
+              <select
+                value={formData.clientId}
+                onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                required
+              >
+                <option value="">Selecione um cliente</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                required
+              >
+                <option value="SCHEDULED">Agendada</option>
+                <option value="IN_PROGRESS">Em Andamento</option>
+                <option value="COMPLETED">Concluída</option>
+                <option value="CANCELLED">Cancelada</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Origem
+            </label>
+            <input
+              type="text"
+              value={formData.origin}
+              onChange={(e) => {
+                setFormData({ ...formData, origin: e.target.value })
+                searchCities(e.target.value)
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Digite a cidade de origem"
+              required
+            />
+            {cities.length > 0 && (
+              <div className="mt-1 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+                {cities.map((city, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, origin: formatCityName(city) })
+                      setCities([])
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                  >
+                    {formatCityName(city)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Destino
+            </label>
+            <input
+              type="text"
+              value={formData.destination}
+              onChange={(e) => {
+                setFormData({ ...formData, destination: e.target.value })
+                searchCities(e.target.value)
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Digite a cidade de destino"
+              required
+            />
+            {cities.length > 0 && (
+              <div className="mt-1 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+                {cities.map((city, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, destination: formatCityName(city) })
+                      setCities([])
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                  >
+                    {formatCityName(city)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Data de Partida
+              </label>
+              <input
+                type="date"
+                value={formData.departureDate}
+                onChange={(e) => setFormData({ ...formData, departureDate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                required
               />
             </div>
-            
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-              >
-                {editingTrip ? 'Atualizar' : 'Cadastrar'}
-              </button>
-            </div>
-          </form>
-        </Modal>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                  Origem → Destino
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
-                  Data Partida
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                  Veículo
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  Motorista
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                  Cliente
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {trips.map((trip) => (
-                <tr key={trip.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                    <div className="max-w-xs truncate" title={`${trip.origin} → ${trip.destination}`}>
-                      {trip.origin} → {trip.destination}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(trip.departureDate)}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    <div className="max-w-xs truncate" title={`${trip.vehicle?.plate} - ${trip.vehicle?.brand} ${trip.vehicle?.model}`}>
-                      {trip.vehicle?.plate} - {trip.vehicle?.brand} {trip.vehicle?.model}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    <div className="max-w-xs truncate" title={trip.driver?.name}>
-                      {trip.driver?.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    <div className="max-w-xs truncate" title={trip.client?.name}>
-                      {trip.client?.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(trip.status)}`}>
-                      {getStatusText(trip.status)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(trip)}
-                        className="text-orange-600 hover:text-orange-900 px-2 py-1 rounded hover:bg-orange-50"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(trip.id)}
-                        className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
-                      >
-                        Deletar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Data de Retorno
+              </label>
+              <input
+                type="date"
+                value={formData.returnDate}
+                onChange={(e) => setFormData({ ...formData, returnDate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Observações
+            </label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              placeholder="Observações sobre a viagem"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              {editingTrip ? 'Atualizar' : 'Criar'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 } 

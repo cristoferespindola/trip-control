@@ -1,3 +1,14 @@
+export interface User {
+  id: string
+  username: string
+  email: string
+  name: string
+  role: 'ADMIN' | 'MANAGER' | 'USER'
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Vehicle {
   id: string
   plate: string
@@ -18,7 +29,7 @@ export interface Driver {
   phone: string
   email?: string
   address?: string
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'ON_TRIP'
   createdAt: Date
   updatedAt: Date
 }
@@ -49,43 +60,41 @@ export interface Trip {
   totalCost?: number
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
   notes?: string
-  createdAt: Date
-  updatedAt: Date
   vehicleId: string
   driverId: string
   clientId: string
+  userId: string
   vehicle?: Vehicle
   driver?: Driver
   client?: Client
-} 
+  user?: User
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface City {
   id: number
   nome: string
   microrregiao?: {
-    id: number
     nome: string
     mesorregiao?: {
-      id: number
       nome: string
       UF?: {
-        id: number
-        sigla: string
         nome: string
-        regiao?: {
-          id: number
-          sigla: string
-          nome: string
-        }
+        sigla: string
       }
     }
   }
-  'regiao-imediata'?: {
-    id: number
-    nome: string
-    'regiao-intermediaria'?: {
-      id: number
-      nome: string
-    }
-  }
+}
+
+export interface LoginCredentials {
+  username: string
+  password: string
+}
+
+export interface AuthContextType {
+  user: User | null
+  login: (credentials: LoginCredentials) => Promise<boolean>
+  logout: () => void
+  isLoading: boolean
 }

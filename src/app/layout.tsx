@@ -1,22 +1,27 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Layout from "@/components/Layout";
+import type { Metadata } from 'next'
+import './globals.css'
+import Layout from '@/components/Layout'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
-  title: "Sistema de Controle de Viagens",
-  description: "Gerencie veículos, motoristas, clientes e viagens de forma eficiente",
-};
+  title: 'TripControl - Sistema de Controle de Viagens',
+  description: 'Sistema completo para gerenciamento de frota, motoristas, clientes e viagens',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="pt-BR">
-      <body className="antialiased">
-        <Layout>{children}</Layout>
+      <body>
+        <AuthProvider>
+          <Layout>
+            {children}
+          </Layout>
+        </AuthProvider>
       </body>
     </html>
-  );
+  )
 }

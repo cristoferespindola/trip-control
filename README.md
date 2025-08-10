@@ -1,3 +1,4 @@
+![image](./public/trip-control-full.png)
 # TripControl - Sistema de Controle de Viagens
 
 Sistema completo para gerenciamento de frota, motoristas, clientes e viagens. Desenvolvido com Next.js 14, Prisma, PostgreSQL e Tailwind CSS.

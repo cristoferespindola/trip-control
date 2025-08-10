@@ -7,26 +7,35 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+
     const trip = await prisma.trip.findUnique({
       where: { id },
       include: {
         vehicle: true,
         driver: true,
-        client: true
-      }
+        client: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
     })
-    
+
     if (!trip) {
       return NextResponse.json(
-        { error: 'Viagem não encontrada' },
+        { message: 'Viagem não encontrada' },
         { status: 404 }
       )
     }
-    
+
     return NextResponse.json(trip)
   } catch (error) {
+    console.error('Erro ao buscar viagem:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar viagem' },
+      { message: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -38,44 +47,69 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const body = await request.json()
-    
+    const {
+      origin,
+      destination,
+      departureDate,
+      returnDate,
+      distance,
+      fuelCost,
+      tollCost,
+      otherCosts,
+      totalCost,
+      status,
+      notes,
+      vehicleId,
+      driverId,
+      clientId,
+      userId,
+    } = await request.json()
+
+    if (!origin || !destination || !departureDate || !vehicleId || !driverId || !clientId || !userId) {
+      return NextResponse.json(
+        { message: 'Campos obrigatórios não preenchidos' },
+        { status: 400 }
+      )
+    }
+
     const trip = await prisma.trip.update({
       where: { id },
       data: {
-        origin: body.origin,
-        destination: body.destination,
-        departureDate: new Date(body.departureDate),
-        returnDate: body.returnDate ? new Date(body.returnDate) : null,
-        distance: body.distance ? parseFloat(body.distance) : null,
-        fuelCost: body.fuelCost ? parseFloat(body.fuelCost) : null,
-        tollCost: body.tollCost ? parseFloat(body.tollCost) : null,
-        otherCosts: body.otherCosts ? parseFloat(body.otherCosts) : null,
-        totalCost: body.totalCost ? parseFloat(body.totalCost) : null,
-        status: body.status,
-        notes: body.notes,
-        vehicleId: body.vehicleId,
-        driverId: body.driverId,
-        clientId: body.clientId
+        origin,
+        destination,
+        departureDate: new Date(departureDate),
+        returnDate: returnDate ? new Date(returnDate) : null,
+        distance: distance ? parseFloat(distance) : null,
+        fuelCost: fuelCost ? parseFloat(fuelCost) : null,
+        tollCost: tollCost ? parseFloat(tollCost) : null,
+        otherCosts: otherCosts ? parseFloat(otherCosts) : null,
+        totalCost: totalCost ? parseFloat(totalCost) : null,
+        status: status || 'SCHEDULED',
+        notes,
+        vehicleId,
+        driverId,
+        clientId,
+        userId,
       },
       include: {
         vehicle: true,
         driver: true,
-        client: true
-      }
+        client: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
     })
-    
+
     return NextResponse.json(trip)
-  } catch (error: any) {
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Viagem não encontrada' },
-        { status: 404 }
-      )
-    }
-    
+  } catch (error) {
+    console.error('Erro ao atualizar viagem:', error)
     return NextResponse.json(
-      { error: 'Erro ao atualizar viagem' },
+      { message: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -87,21 +121,19 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+
     await prisma.trip.delete({
-      where: { id }
+      where: { id },
     })
-    
-    return NextResponse.json({ message: 'Viagem deletada com sucesso' })
-  } catch (error: any) {
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Viagem não encontrada' },
-        { status: 404 }
-      )
-    }
-    
+
     return NextResponse.json(
-      { error: 'Erro ao deletar viagem' },
+      { message: 'Viagem excluída com sucesso' },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error('Erro ao excluir viagem:', error)
+    return NextResponse.json(
+      { message: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

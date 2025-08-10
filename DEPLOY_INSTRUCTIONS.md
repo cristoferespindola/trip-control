@@ -162,3 +162,4 @@ Seu **TripControl** está pronto para produção!
 ---
 
 **Desenvolvido com ❤️ usando Next.js, Prisma e Tailwind CSS**
+

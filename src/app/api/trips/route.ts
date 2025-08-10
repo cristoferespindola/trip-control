@@ -7,17 +7,25 @@ export async function GET() {
       include: {
         vehicle: true,
         driver: true,
-        client: true
+        client: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
-    
+
     return NextResponse.json(trips)
   } catch (error) {
+    console.error('Erro ao buscar viagens:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar viagens' },
+      { message: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
@@ -25,36 +33,68 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    
+    const {
+      origin,
+      destination,
+      departureDate,
+      returnDate,
+      distance,
+      fuelCost,
+      tollCost,
+      otherCosts,
+      totalCost,
+      status,
+      notes,
+      vehicleId,
+      driverId,
+      clientId,
+      userId,
+    } = await request.json()
+
+    if (!origin || !destination || !departureDate || !vehicleId || !driverId || !clientId || !userId) {
+      return NextResponse.json(
+        { message: 'Campos obrigatórios não preenchidos' },
+        { status: 400 }
+      )
+    }
+
     const trip = await prisma.trip.create({
       data: {
-        origin: body.origin,
-        destination: body.destination,
-        departureDate: new Date(body.departureDate),
-        returnDate: body.returnDate ? new Date(body.returnDate) : null,
-        distance: body.distance ? parseFloat(body.distance) : null,
-        fuelCost: body.fuelCost ? parseFloat(body.fuelCost) : null,
-        tollCost: body.tollCost ? parseFloat(body.tollCost) : null,
-        otherCosts: body.otherCosts ? parseFloat(body.otherCosts) : null,
-        totalCost: body.totalCost ? parseFloat(body.totalCost) : null,
-        status: body.status || 'SCHEDULED',
-        notes: body.notes,
-        vehicleId: body.vehicleId,
-        driverId: body.driverId,
-        clientId: body.clientId
+        origin,
+        destination,
+        departureDate: new Date(departureDate),
+        returnDate: returnDate ? new Date(returnDate) : null,
+        distance: distance ? parseFloat(distance) : null,
+        fuelCost: fuelCost ? parseFloat(fuelCost) : null,
+        tollCost: tollCost ? parseFloat(tollCost) : null,
+        otherCosts: otherCosts ? parseFloat(otherCosts) : null,
+        totalCost: totalCost ? parseFloat(totalCost) : null,
+        status: status || 'SCHEDULED',
+        notes,
+        vehicleId,
+        driverId,
+        clientId,
+        userId,
       },
       include: {
         vehicle: true,
         driver: true,
-        client: true
-      }
+        client: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
     })
-    
+
     return NextResponse.json(trip, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
+    console.error('Erro ao criar viagem:', error)
     return NextResponse.json(
-      { error: 'Erro ao criar viagem' },
+      { message: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

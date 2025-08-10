@@ -10,86 +10,118 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Vehicle {
-  id          String   @id @default(cuid())
-  plate       String   @unique
-  model       String
-  brand       String
-  year        Int
-  capacity    Int
-  status      VehicleStatus @default(ACTIVE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(USER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relacionamentos
-  trips       Trip[]
-  
+  trips     Trip[]
+
+  @@map("users")
+}
+
+model Vehicle {
+  id       String        @id @default(cuid())
+  plate    String        @unique
+  model    String
+  brand    String
+  year     Int
+  capacity Int
+  status   VehicleStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relacionamentos
+  trips Trip[]
+
   @@map("vehicles")
 }
 
 model Driver {
-  id          String   @id @default(cuid())
-  name        String
-  cpf         String   @unique
-  cnh         String   @unique
-  phone       String
-  email       String?
-  address     String?
-  status      DriverStatus @default(ACTIVE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id      String       @id @default(cuid())
+  name    String
+  cpf     String       @unique
+  cnh     String       @unique
+  phone   String
+  email   String?
+  address String?
+  status  DriverStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
   // Relacionamentos
-  trips       Trip[]
-  
+  trips Trip[]
+
   @@map("drivers")
 }
 
 model Client {
-  id          String   @id @default(cuid())
-  name        String
-  cpf         String?  @unique
-  cnpj        String?  @unique
-  phone       String
-  email       String?
-  address     String?
-  status      ClientStatus @default(ACTIVE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id      String       @id @default(cuid())
+  name    String
+  cpf     String?      @unique
+  cnpj    String?      @unique
+  phone   String
+  email   String?
+  address String?
+  status  ClientStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
   // Relacionamentos
-  trips       Trip[]
-  
+  trips Trip[]
+
   @@map("clients")
 }
 
 model Trip {
-  id          String   @id @default(cuid())
-  origin      String
-  destination String
+  id           String      @id @default(cuid())
+  origin       String
+  destination  String
   departureDate DateTime
   returnDate   DateTime?
-  distance    Float?
-  fuelCost    Float?
-  tollCost    Float?
-  otherCosts  Float?
-  totalCost   Float?
-  status      TripStatus @default(SCHEDULED)
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  distance     Float?
+  fuelCost     Float?
+  tollCost     Float?
+  otherCosts   Float?
+  totalCost    Float?
+  status       TripStatus  @default(SCHEDULED)
+  notes        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
   // Relacionamentos
-  vehicleId   String
-  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   
-  driverId    String
-  driver      Driver   @relation(fields: [driverId], references: [id])
+  driverId String
+  driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
   
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
-  
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("trips")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum VehicleStatus {
@@ -102,6 +134,7 @@ enum DriverStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
+  ON_TRIP
 }
 
 enum ClientStatus {
