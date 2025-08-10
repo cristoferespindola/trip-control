@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import Logo from '@/components/logo'
 import { useTranslation } from '@/locales'
+import Input from '../../components/form/Input'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -53,55 +54,22 @@ export default function LoginPage() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t('login.username')}
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 placeholder-gray-700 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                placeholder={t('login.username')}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t('login.password')}
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 placeholder-gray-700 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm pr-10"
-                  placeholder={t('login.password')}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
+            <Input
+              label={t('login.username')}
+              name="username"
+              type="text"
+              placeholder={t('login.username')}
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+            />
+            <Input
+              label={t('login.password')}
+              name="password"
+              type="password"
+              placeholder={t('login.password')}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
           </div>
 
           {error && (

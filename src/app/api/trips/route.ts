@@ -22,8 +22,16 @@ export async function GET() {
     })
 
     return NextResponse.json(trips)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erro ao buscar viagens:', error)
+
+    if (
+      error instanceof Error &&
+      (error.message.includes('P2021') || error.message.includes('P2024'))
+    ) {
+      return NextResponse.json([])
+    }
+
     return NextResponse.json(
       { message: 'Erro interno do servidor' },
       { status: 500 }
@@ -33,6 +41,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json()
+    console.log('Received trip data:', body)
+
     const {
       origin,
       destination,
@@ -49,7 +60,7 @@ export async function POST(request: NextRequest) {
       driverId,
       clientId,
       userId,
-    } = await request.json()
+    } = body
 
     if (
       !origin ||
@@ -65,6 +76,21 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Verificar se o usuário existe
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!userExists) {
+      console.log('User not found with ID:', userId)
+      return NextResponse.json(
+        { message: 'Usuário não encontrado' },
+        { status: 400 }
+      )
+    }
+
+    console.log('User found:', userExists)
 
     const trip = await prisma.trip.create({
       data: {

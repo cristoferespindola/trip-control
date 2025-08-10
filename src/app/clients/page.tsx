@@ -110,7 +110,7 @@ export default function ClientsPage() {
         open={showModal}
         onClose={handleCloseModal}
         title={editingClient ? 'Editar Cliente' : 'Novo Cliente'}
-        size="lg"
+        size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

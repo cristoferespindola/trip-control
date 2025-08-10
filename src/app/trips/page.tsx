@@ -12,8 +12,13 @@ import {
 } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal'
 import { Trip, Vehicle, Driver, Client, City } from '@/types'
+import Select from '@/components/form/Select'
+import Input from '@/components/form/Input'
+import TextArea from '../../components/form/TextArea'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function TripsPage() {
+  const { user } = useAuth()
   const [trips, setTrips] = useState<Trip[]>([])
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [drivers, setDrivers] = useState<Driver[]>([])
@@ -21,7 +26,8 @@ export default function TripsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [cities, setCities] = useState<City[]>([])
+  const [originCities, setOriginCities] = useState<City[]>([])
+  const [destinationCities, setDestinationCities] = useState<City[]>([])
   const [isLoadingCities, setIsLoadingCities] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -100,16 +106,26 @@ export default function TripsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!user) {
+      alert('Usuário não autenticado')
+      return
+    }
+
     try {
       const url = editingTrip ? `/api/trips/${editingTrip.id}` : '/api/trips'
       const method = editingTrip ? 'PUT' : 'POST'
+
+      const tripData = {
+        ...formData,
+        userId: user.id,
+      }
 
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(tripData),
       })
 
       if (response.ok) {
@@ -199,9 +215,16 @@ export default function TripsPage() {
       .replace(/[^a-z0-9\s]/g, '')
   }
 
-  const searchCities = async (query: string) => {
+  const searchCities = async (
+    query: string,
+    field: 'origin' | 'destination'
+  ) => {
     if (query.length < 2) {
-      setCities([])
+      if (field === 'origin') {
+        setOriginCities([])
+      } else {
+        setDestinationCities([])
+      }
       return
     }
 
@@ -214,13 +237,27 @@ export default function TripsPage() {
       if (response.ok) {
         const data = await response.json()
         const filteredCities = filterCities(data, query)
-        setCities(filteredCities.slice(0, 10))
+        const citiesToSet = filteredCities.slice(0, 10)
+
+        if (field === 'origin') {
+          setOriginCities(citiesToSet)
+        } else {
+          setDestinationCities(citiesToSet)
+        }
       } else {
-        setCities([])
+        if (field === 'origin') {
+          setOriginCities([])
+        } else {
+          setDestinationCities([])
+        }
       }
     } catch (error) {
       console.error('Erro ao buscar cidades:', error)
-      setCities([])
+      if (field === 'origin') {
+        setOriginCities([])
+      } else {
+        setDestinationCities([])
+      }
     } finally {
       setIsLoadingCities(false)
     }
@@ -312,6 +349,11 @@ export default function TripsPage() {
       </div>
 
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        {trips.length === 0 && (
+          <div className="px-6 py-4">
+            <p className="text-gray-500">Nenhuma viagem encontrada</p>
+          </div>
+        )}
         <ul className="divide-y divide-gray-200">
           {trips.map(trip => {
             const vehicle = vehicles.find(v => v.id === trip.vehicleId)
@@ -373,116 +415,90 @@ export default function TripsPage() {
         open={isModalOpen}
         onClose={closeModal}
         title={editingTrip ? 'Editar Viagem' : 'Nova Viagem'}
+        size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Veículo
-              </label>
-              <select
-                value={formData.vehicleId}
-                onChange={e =>
-                  setFormData({ ...formData, vehicleId: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                required
-              >
-                <option value="">Selecione um veículo</option>
-                {vehicles.map(vehicle => (
-                  <option key={vehicle.id} value={vehicle.id}>
-                    {vehicle.plate} - {vehicle.brand} {vehicle.model}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Veículo"
+              name="vehicleId"
+              options={vehicles.map(vehicle => ({
+                id: vehicle.id,
+                name: vehicle.plate,
+              }))}
+              value={formData.vehicleId}
+              required
+              onChange={e =>
+                setFormData({ ...formData, vehicleId: e.target.value })
+              }
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Motorista
-              </label>
-              <select
-                value={formData.driverId}
-                onChange={e =>
-                  setFormData({ ...formData, driverId: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                required
-              >
-                <option value="">Selecione um motorista</option>
-                {drivers.map(driver => (
-                  <option key={driver.id} value={driver.id}>
-                    {driver.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Motorista"
+              name="driverId"
+              options={drivers.map(driver => ({
+                id: driver.id,
+                name: driver.name,
+              }))}
+              value={formData.driverId}
+              required
+              onChange={e =>
+                setFormData({ ...formData, driverId: e.target.value })
+              }
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cliente
-              </label>
-              <select
-                value={formData.clientId}
-                onChange={e =>
-                  setFormData({ ...formData, clientId: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                required
-              >
-                <option value="">Selecione um cliente</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Cliente"
+              name="clientId"
+              options={clients.map(client => ({
+                id: client.id,
+                name: client.name,
+              }))}
+              value={formData.clientId}
+              required
+              onChange={e =>
+                setFormData({ ...formData, clientId: e.target.value })
+              }
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={e =>
-                  setFormData({ ...formData, status: e.target.value as any })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                required
-              >
-                <option value="SCHEDULED">Agendada</option>
-                <option value="IN_PROGRESS">Em Andamento</option>
-                <option value="COMPLETED">Concluída</option>
-                <option value="CANCELLED">Cancelada</option>
-              </select>
-            </div>
+            <Select
+              label="Status"
+              name="status"
+              options={[
+                { id: 'SCHEDULED', name: 'Agendada' },
+                { id: 'IN_PROGRESS', name: 'Em Andamento' },
+                { id: 'COMPLETED', name: 'Concluída' },
+                { id: 'CANCELLED', name: 'Cancelada' },
+              ]}
+              value={formData.status}
+              required
+              onChange={e =>
+                setFormData({ ...formData, status: e.target.value as any })
+              }
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Origem
-            </label>
-            <input
+            <Input
+              label="Origem"
+              name="origin"
               type="text"
               value={formData.origin}
               onChange={e => {
                 setFormData({ ...formData, origin: e.target.value })
-                searchCities(e.target.value)
+                searchCities(e.target.value, 'origin')
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="Digite a cidade de origem"
-              required
             />
-            {cities.length > 0 && (
-              <div className="mt-1 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
-                {cities.map((city, index) => (
+            {originCities.length > 0 && (
+              <div className="mt-1 border border-gray-300 text-gray-700 rounded-md max-h-40 overflow-y-auto">
+                {originCities.map((city, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={() => {
                       setFormData({ ...formData, origin: formatCityName(city) })
-                      setCities([])
+                      setOriginCities([])
                     }}
                     className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
                   >
@@ -494,23 +510,20 @@ export default function TripsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Destino
-            </label>
-            <input
+            <Input
+              label="Destino"
+              name="destination"
               type="text"
               value={formData.destination}
               onChange={e => {
                 setFormData({ ...formData, destination: e.target.value })
-                searchCities(e.target.value)
+                searchCities(e.target.value, 'destination')
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="Digite a cidade de destino"
-              required
             />
-            {cities.length > 0 && (
-              <div className="mt-1 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
-                {cities.map((city, index) => (
+            {destinationCities.length > 0 && (
+              <div className="mt-1 border border-gray-300 text-gray-700 rounded-md max-h-40 overflow-y-auto">
+                {destinationCities.map((city, index) => (
                   <button
                     key={index}
                     type="button"
@@ -519,7 +532,7 @@ export default function TripsPage() {
                         ...formData,
                         destination: formatCityName(city),
                       })
-                      setCities([])
+                      setDestinationCities([])
                     }}
                     className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
                   >
@@ -531,50 +544,38 @@ export default function TripsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Data de Partida
-              </label>
-              <input
-                type="date"
-                value={formData.departureDate}
-                onChange={e =>
-                  setFormData({ ...formData, departureDate: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Data de Retorno
-              </label>
-              <input
-                type="date"
-                value={formData.returnDate}
-                onChange={e =>
-                  setFormData({ ...formData, returnDate: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Observações
-            </label>
-            <textarea
-              value={formData.notes}
+            <Input
+              label="Data de Partida"
+              name="departureDate"
+              type="date"
+              value={formData.departureDate}
               onChange={e =>
-                setFormData({ ...formData, notes: e.target.value })
+                setFormData({ ...formData, departureDate: e.target.value })
               }
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-              placeholder="Observações sobre a viagem"
+              placeholder=""
+            />
+
+            <Input
+              label="Data de Retorno"
+              name="returnDate"
+              type="date"
+              value={formData.returnDate}
+              onChange={e =>
+                setFormData({ ...formData, returnDate: e.target.value })
+              }
+              placeholder=""
             />
           </div>
+
+          <TextArea
+            label="Observações"
+            name="notes"
+            value={formData.notes}
+            onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            rows={3}
+            placeholder="Observações sobre a viagem"
+            required={false}
+          />
 
           <div className="flex justify-end space-x-3 pt-4">
             <button
