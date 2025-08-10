@@ -189,6 +189,18 @@ export default function ExpenseModal({
               <p className="text-sm text-gray-600">
                 {expenses.length} despesa{expenses.length !== 1 ? 's' : ''}
               </p>
+              {trip?.tripValue && (
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    <strong>Valor da Viagem:</strong> R${' '}
+                    {trip.tripValue.toFixed(2)}
+                  </p>
+                  <p className="text-sm font-semibold text-green-600">
+                    <strong>Valor Final:</strong> R${' '}
+                    {(trip.tripValue - totalExpenses).toFixed(2)}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

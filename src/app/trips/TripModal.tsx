@@ -246,18 +246,6 @@ export default function TripModal({
             placeholder="0"
             required={false}
           />
-
-          <Input
-            label="Valor do Frete"
-            name="tripValue"
-            type="number"
-            value={formData.tripValue}
-            onChange={e =>
-              setFormData({ ...formData, tripValue: e.target.value })
-            }
-            placeholder="0.00"
-            required={false}
-          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
