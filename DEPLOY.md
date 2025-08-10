@@ -171,6 +171,8 @@ npm run setup-db
 ### Erro: "Usuário admin não criado"
 
 - Execute o setup manual: `POST /api/setup`
+- Ou crie apenas o admin: `POST /api/admin-setup`
+- Verifique se o admin existe: `GET /api/admin-setup`
 - Verifique os logs da Vercel
 - Confirme se as variáveis de ambiente estão corretas
 
