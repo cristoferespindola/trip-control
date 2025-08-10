@@ -49,3 +49,6 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# Local doc
+DEPLOY_VERCEL.md

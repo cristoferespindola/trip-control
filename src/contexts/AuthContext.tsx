@@ -30,12 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser))
-      } catch (error) {
-        localStorage.removeItem('user')
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser))
+        } catch (error) {
+          localStorage.removeItem('user')
+        }
       }
     }
     setIsLoading(false)
@@ -55,8 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userData = await response.json()
         const { token, ...userWithoutToken } = userData
         setUser(userWithoutToken)
-        localStorage.setItem('user', JSON.stringify(userWithoutToken))
-        localStorage.setItem('token', token)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(userWithoutToken))
+          localStorage.setItem('token', token)
+        }
         return true
       } else {
         return false
@@ -69,8 +73,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+    }
   }
 
   return (
