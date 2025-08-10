@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id          String   @id @default(cuid())
+  plate       String   @unique
+  model       String
+  brand       String
+  year        Int
+  capacity    Int
+  status      VehicleStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  trips       Trip[]
+  
+  @@map("vehicles")
+}
+
+model Driver {
+  id          String   @id @default(cuid())
+  name        String
+  cpf         String   @unique
+  cnh         String   @unique
+  phone       String
+  email       String?
+  address     String?
+  status      DriverStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  trips       Trip[]
+  
+  @@map("drivers")
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  cpf         String?  @unique
+  cnpj        String?  @unique
+  phone       String
+  email       String?
+  address     String?
+  status      ClientStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  trips       Trip[]
+  
+  @@map("clients")
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  origin      String
+  destination String
+  departureDate DateTime
+  returnDate   DateTime?
+  distance    Float?
+  fuelCost    Float?
+  tollCost    Float?
+  otherCosts  Float?
+  totalCost   Float?
+  status      TripStatus @default(SCHEDULED)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  
+  driverId    String
+  driver      Driver   @relation(fields: [driverId], references: [id])
+  
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  
+  @@map("trips")
+}
+
+enum VehicleStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum TripStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
