@@ -9,13 +9,15 @@ import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
+  FunnelIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline'
-import Modal from '@/components/modal'
 import { Trip, Vehicle, Driver, Client, City } from '@/types'
-import Select from '@/components/form/Select'
-import Input from '@/components/form/Input'
-import TextArea from '../../components/form/TextArea'
 import { useAuth } from '@/contexts/AuthContext'
+import TripModal from './TripModal'
+import Input from '../../components/form/Input'
+import Select from '../../components/form/Select'
+import CitySelect from '../../components/cities'
 
 export default function TripsPage() {
   const { user } = useAuth()
@@ -26,24 +28,16 @@ export default function TripsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [originCities, setOriginCities] = useState<City[]>([])
-  const [destinationCities, setDestinationCities] = useState<City[]>([])
-  const [isLoadingCities, setIsLoadingCities] = useState(false)
-
-  const [formData, setFormData] = useState({
-    vehicleId: '',
-    driverId: '',
-    clientId: '',
+  const [showFilters, setShowFilters] = useState(false)
+  const [filters, setFilters] = useState({
     origin: '',
     destination: '',
-    departureDate: '',
-    returnDate: '',
-    status: 'SCHEDULED' as
-      | 'SCHEDULED'
-      | 'IN_PROGRESS'
-      | 'COMPLETED'
-      | 'CANCELLED',
-    notes: '',
+    clientId: '',
+    status: '',
+    vehicleId: '',
+    driverId: '',
+    startDate: '',
+    endDate: '',
   })
 
   useEffect(() => {
@@ -103,9 +97,7 @@ export default function TripsPage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const handleSubmit = async (formData: any) => {
     if (!user) {
       alert('Usuário não autenticado')
       return
@@ -131,7 +123,6 @@ export default function TripsPage() {
       if (response.ok) {
         setIsModalOpen(false)
         setEditingTrip(null)
-        resetForm()
         fetchTrips()
       } else {
         const error = await response.json()
@@ -145,19 +136,6 @@ export default function TripsPage() {
 
   const handleEdit = (trip: Trip) => {
     setEditingTrip(trip)
-    setFormData({
-      vehicleId: trip.vehicleId,
-      driverId: trip.driverId,
-      clientId: trip.clientId,
-      origin: trip.origin,
-      destination: trip.destination,
-      departureDate: trip.departureDate.toISOString().split('T')[0],
-      returnDate: trip.returnDate
-        ? trip.returnDate.toISOString().split('T')[0]
-        : '',
-      status: trip.status,
-      notes: trip.notes || '',
-    })
     setIsModalOpen(true)
   }
 
@@ -181,30 +159,14 @@ export default function TripsPage() {
     }
   }
 
-  const resetForm = () => {
-    setFormData({
-      vehicleId: '',
-      driverId: '',
-      clientId: '',
-      origin: '',
-      destination: '',
-      departureDate: '',
-      returnDate: '',
-      status: 'SCHEDULED',
-      notes: '',
-    })
-  }
-
   const openModal = () => {
     setEditingTrip(null)
-    resetForm()
     setIsModalOpen(true)
   }
 
   const closeModal = () => {
     setIsModalOpen(false)
     setEditingTrip(null)
-    resetForm()
   }
 
   const normalizeText = (text: string) => {
@@ -213,85 +175,6 @@ export default function TripsPage() {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
-  }
-
-  const searchCities = async (
-    query: string,
-    field: 'origin' | 'destination'
-  ) => {
-    if (query.length < 2) {
-      if (field === 'origin') {
-        setOriginCities([])
-      } else {
-        setDestinationCities([])
-      }
-      return
-    }
-
-    setIsLoadingCities(true)
-    try {
-      const response = await fetch(
-        `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?nome=${encodeURIComponent(query)}`
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        const filteredCities = filterCities(data, query)
-        const citiesToSet = filteredCities.slice(0, 10)
-
-        if (field === 'origin') {
-          setOriginCities(citiesToSet)
-        } else {
-          setDestinationCities(citiesToSet)
-        }
-      } else {
-        if (field === 'origin') {
-          setOriginCities([])
-        } else {
-          setDestinationCities([])
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao buscar cidades:', error)
-      if (field === 'origin') {
-        setOriginCities([])
-      } else {
-        setDestinationCities([])
-      }
-    } finally {
-      setIsLoadingCities(false)
-    }
-  }
-
-  const filterCities = (cities: any[], query: string) => {
-    const normalizedQuery = normalizeText(query)
-
-    return cities
-      .filter((city: any) => {
-        const cityName = normalizeText(city.nome)
-        const stateName = normalizeText(
-          city.microrregiao?.mesorregiao?.UF?.nome || ''
-        )
-        return (
-          cityName.includes(normalizedQuery) ||
-          stateName.includes(normalizedQuery)
-        )
-      })
-      .sort((a: any, b: any) => {
-        const aName = normalizeText(a.nome)
-        const bName = normalizeText(b.nome)
-        const aStartsWithQuery = aName.startsWith(normalizedQuery)
-        const bStartsWithQuery = bName.startsWith(normalizedQuery)
-
-        if (aStartsWithQuery && !bStartsWithQuery) return -1
-        if (!aStartsWithQuery && bStartsWithQuery) return 1
-        return aName.localeCompare(bName)
-      })
-  }
-
-  const formatCityName = (city: City) => {
-    const stateName = city.microrregiao?.mesorregiao?.UF?.nome || ''
-    return `${city.nome} - ${stateName}`
   }
 
   const getStatusColor = (status: string) => {
@@ -324,6 +207,83 @@ export default function TripsPage() {
     }
   }
 
+  const filteredTrips = trips.filter(trip => {
+    const vehicle = vehicles.find(v => v.id === trip.vehicleId)
+    const driver = drivers.find(d => d.id === trip.driverId)
+    const client = clients.find(c => c.id === trip.clientId)
+
+    // Filtro por origem
+    if (filters.origin) {
+      const normalizedOrigin = normalizeText(trip.origin)
+      const normalizedFilterOrigin = normalizeText(filters.origin)
+      if (!normalizedOrigin.includes(normalizedFilterOrigin)) {
+        return false
+      }
+    }
+
+    // Filtro por destino
+    if (filters.destination) {
+      const normalizedDestination = normalizeText(trip.destination)
+      const normalizedFilterDestination = normalizeText(filters.destination)
+      if (!normalizedDestination.includes(normalizedFilterDestination)) {
+        return false
+      }
+    }
+
+    // Filtro por cliente
+    if (filters.clientId && trip.clientId !== filters.clientId) {
+      return false
+    }
+
+    // Filtro por status
+    if (filters.status && trip.status !== filters.status) {
+      return false
+    }
+
+    // Filtro por veículo
+    if (filters.vehicleId && trip.vehicleId !== filters.vehicleId) {
+      return false
+    }
+
+    // Filtro por motorista
+    if (filters.driverId && trip.driverId !== filters.driverId) {
+      return false
+    }
+
+    // Filtro por data de início
+    if (filters.startDate) {
+      const tripDate = new Date(trip.departureDate)
+      const startDate = new Date(filters.startDate)
+      if (tripDate < startDate) {
+        return false
+      }
+    }
+
+    // Filtro por data de fim
+    if (filters.endDate) {
+      const tripDate = new Date(trip.departureDate)
+      const endDate = new Date(filters.endDate)
+      if (tripDate > endDate) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  const clearFilters = () => {
+    setFilters({
+      origin: '',
+      destination: '',
+      clientId: '',
+      status: '',
+      vehicleId: '',
+      driverId: '',
+      startDate: '',
+      endDate: '',
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -339,6 +299,27 @@ export default function TripsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Viagens</h1>
           <p className="text-gray-600">Gerencie as viagens da sua frota</p>
         </div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+          >
+            <FunnelIcon className="h-4 w-4 mr-2" />
+            {showFilters ? 'Ocultar Filtros' : 'Filtros'}
+          </button>
+          {Object.values(filters).some(value => value !== '') && (
+            <button
+              onClick={clearFilters}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              <XMarkIcon className="h-4 w-4 mr-1" />
+              Limpar
+            </button>
+          )}
+        </div>
         <button
           onClick={openModal}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
@@ -348,14 +329,129 @@ export default function TripsPage() {
         </button>
       </div>
 
+      {showFilters && (
+        <div className="bg-white shadow rounded-lg p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Filtros</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <CitySelect
+              label="Origem"
+              name="filterOrigin"
+              value={filters.origin}
+              onChange={value => setFilters({ ...filters, origin: value })}
+              placeholder="Filtrar por origem"
+            />
+
+            <CitySelect
+              label="Destino"
+              name="filterDestination"
+              value={filters.destination}
+              onChange={value => setFilters({ ...filters, destination: value })}
+              placeholder="Filtrar por destino"
+            />
+
+            <Select
+              label="Cliente"
+              name="filterClient"
+              options={[
+                { id: '', name: 'Todos os clientes' },
+                ...clients.map(client => ({
+                  id: client.id,
+                  name: client.name,
+                })),
+              ]}
+              value={filters.clientId}
+              required={false}
+              onChange={e =>
+                setFilters({ ...filters, clientId: e.target.value })
+              }
+            />
+
+            <Select
+              label="Status"
+              name="filterStatus"
+              options={[
+                { id: '', name: 'Todos os status' },
+                { id: 'SCHEDULED', name: 'Agendada' },
+                { id: 'IN_PROGRESS', name: 'Em Andamento' },
+                { id: 'COMPLETED', name: 'Concluída' },
+                { id: 'CANCELLED', name: 'Cancelada' },
+              ]}
+              value={filters.status}
+              required={false}
+              onChange={e => setFilters({ ...filters, status: e.target.value })}
+            />
+
+            <Select
+              label="Veículo"
+              name="filterVehicle"
+              options={[
+                { id: '', name: 'Todos os veículos' },
+                ...vehicles.map(vehicle => ({
+                  id: vehicle.id,
+                  name: vehicle.plate,
+                })),
+              ]}
+              value={filters.vehicleId}
+              required={false}
+              onChange={e =>
+                setFilters({ ...filters, vehicleId: e.target.value })
+              }
+            />
+
+            <Select
+              label="Motorista"
+              name="filterDriver"
+              options={[
+                { id: '', name: 'Todos os motoristas' },
+                ...drivers.map(driver => ({
+                  id: driver.id,
+                  name: driver.name,
+                })),
+              ]}
+              value={filters.driverId}
+              required={false}
+              onChange={e =>
+                setFilters({ ...filters, driverId: e.target.value })
+              }
+            />
+
+            <Input
+              label="Data Início"
+              name="filterStartDate"
+              type="date"
+              value={filters.startDate}
+              onChange={e =>
+                setFilters({ ...filters, startDate: e.target.value })
+              }
+              placeholder=""
+            />
+
+            <Input
+              label="Data Fim"
+              name="filterEndDate"
+              type="date"
+              value={filters.endDate}
+              onChange={e =>
+                setFilters({ ...filters, endDate: e.target.value })
+              }
+              placeholder=""
+            />
+          </div>
+        </div>
+      )}
+
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        {trips.length === 0 && (
+        {filteredTrips.length === 0 && (
           <div className="px-6 py-4">
-            <p className="text-gray-500">Nenhuma viagem encontrada</p>
+            <p className="text-gray-500">
+              {trips.length === 0
+                ? 'Nenhuma viagem encontrada'
+                : 'Nenhuma viagem corresponde aos filtros aplicados'}
+            </p>
           </div>
         )}
         <ul className="divide-y divide-gray-200">
-          {trips.map(trip => {
+          {filteredTrips.map(trip => {
             const vehicle = vehicles.find(v => v.id === trip.vehicleId)
             const driver = drivers.find(d => d.id === trip.driverId)
             const client = clients.find(c => c.id === trip.clientId)
@@ -411,189 +507,15 @@ export default function TripsPage() {
         </ul>
       </div>
 
-      <Modal
+      <TripModal
         open={isModalOpen}
         onClose={closeModal}
-        title={editingTrip ? 'Editar Viagem' : 'Nova Viagem'}
-        size="xl"
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select
-              label="Veículo"
-              name="vehicleId"
-              options={vehicles.map(vehicle => ({
-                id: vehicle.id,
-                name: vehicle.plate,
-              }))}
-              value={formData.vehicleId}
-              required
-              onChange={e =>
-                setFormData({ ...formData, vehicleId: e.target.value })
-              }
-            />
-
-            <Select
-              label="Motorista"
-              name="driverId"
-              options={drivers.map(driver => ({
-                id: driver.id,
-                name: driver.name,
-              }))}
-              value={formData.driverId}
-              required
-              onChange={e =>
-                setFormData({ ...formData, driverId: e.target.value })
-              }
-            />
-
-            <Select
-              label="Cliente"
-              name="clientId"
-              options={clients.map(client => ({
-                id: client.id,
-                name: client.name,
-              }))}
-              value={formData.clientId}
-              required
-              onChange={e =>
-                setFormData({ ...formData, clientId: e.target.value })
-              }
-            />
-
-            <Select
-              label="Status"
-              name="status"
-              options={[
-                { id: 'SCHEDULED', name: 'Agendada' },
-                { id: 'IN_PROGRESS', name: 'Em Andamento' },
-                { id: 'COMPLETED', name: 'Concluída' },
-                { id: 'CANCELLED', name: 'Cancelada' },
-              ]}
-              value={formData.status}
-              required
-              onChange={e =>
-                setFormData({ ...formData, status: e.target.value as any })
-              }
-            />
-          </div>
-
-          <div>
-            <Input
-              label="Origem"
-              name="origin"
-              type="text"
-              value={formData.origin}
-              onChange={e => {
-                setFormData({ ...formData, origin: e.target.value })
-                searchCities(e.target.value, 'origin')
-              }}
-              placeholder="Digite a cidade de origem"
-            />
-            {originCities.length > 0 && (
-              <div className="mt-1 border border-gray-300 text-gray-700 rounded-md max-h-40 overflow-y-auto">
-                {originCities.map((city, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => {
-                      setFormData({ ...formData, origin: formatCityName(city) })
-                      setOriginCities([])
-                    }}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    {formatCityName(city)}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Input
-              label="Destino"
-              name="destination"
-              type="text"
-              value={formData.destination}
-              onChange={e => {
-                setFormData({ ...formData, destination: e.target.value })
-                searchCities(e.target.value, 'destination')
-              }}
-              placeholder="Digite a cidade de destino"
-            />
-            {destinationCities.length > 0 && (
-              <div className="mt-1 border border-gray-300 text-gray-700 rounded-md max-h-40 overflow-y-auto">
-                {destinationCities.map((city, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        destination: formatCityName(city),
-                      })
-                      setDestinationCities([])
-                    }}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    {formatCityName(city)}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Data de Partida"
-              name="departureDate"
-              type="date"
-              value={formData.departureDate}
-              onChange={e =>
-                setFormData({ ...formData, departureDate: e.target.value })
-              }
-              placeholder=""
-            />
-
-            <Input
-              label="Data de Retorno"
-              name="returnDate"
-              type="date"
-              value={formData.returnDate}
-              onChange={e =>
-                setFormData({ ...formData, returnDate: e.target.value })
-              }
-              placeholder=""
-            />
-          </div>
-
-          <TextArea
-            label="Observações"
-            name="notes"
-            value={formData.notes}
-            onChange={e => setFormData({ ...formData, notes: e.target.value })}
-            rows={3}
-            placeholder="Observações sobre a viagem"
-            required={false}
-          />
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-            >
-              {editingTrip ? 'Atualizar' : 'Criar'}
-            </button>
-          </div>
-        </form>
-      </Modal>
+        editingTrip={editingTrip}
+        vehicles={vehicles}
+        drivers={drivers}
+        clients={clients}
+        onSubmit={handleSubmit}
+      />
     </div>
   )
 }
