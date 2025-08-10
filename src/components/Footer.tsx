@@ -1,28 +1,19 @@
 import Image from 'next/image'
+import { useTranslation } from '@/locales'
 
 export default function Footer() {
+  const { t } = useTranslation()
   const currentYear = new Date().getFullYear()
-  
+
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto">
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          <div className="flex items-center space-x-3">
-            <Image
-              src="/logo-temp.svg"
-              alt="CE Logo"
-              width={32}
-              height={32}
-              className="h-8 w-8"
-            />
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Desenvolvido por</span>
-              <span className="ml-1 font-bold text-gray-900">CE</span>
-            </div>
-          </div>
-          
-          <div className="text-sm text-gray-500">
-            © {currentYear} TripControl. Todos os direitos reservados.
+    <footer className="bg-white border-t border-gray-200">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Image src="logo-ce.svg" width={24} height={24} alt="CE Logo" />
+            <span className="text-sm text-gray-600">
+              {t('footer.developedBy')} - {currentYear}
+            </span>
           </div>
         </div>
       </div>

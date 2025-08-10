@@ -77,7 +77,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Features Grid */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Módulos do Sistema</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
