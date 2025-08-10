@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (!existingInitial || (existingInitial as any[]).length === 0) {
       console.log('🚀 Applying initial migration...')
-      
+
       // Create all tables
       await prisma.$executeRaw`
         CREATE TABLE IF NOT EXISTS "Vehicle" (
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
           "year" INTEGER NOT NULL,
           "capacity" INTEGER NOT NULL,
           "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
           CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("id")
         )
       `
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
           "email" TEXT NOT NULL,
           "address" TEXT NOT NULL,
           "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
           CONSTRAINT "Driver_pkey" PRIMARY KEY ("id")
         )
       `
@@ -77,9 +77,27 @@ export async function POST(request: NextRequest) {
           "email" TEXT NOT NULL,
           "address" TEXT NOT NULL,
           "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
           CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
+        )
+      `
+
+      await prisma.$executeRaw`
+        CREATE TABLE IF NOT EXISTS "Trip" (
+          "id" TEXT NOT NULL,
+          "vehicleId" TEXT NOT NULL,
+          "driverId" TEXT NOT NULL,
+          "clientId" TEXT NOT NULL,
+          "origin" TEXT NOT NULL,
+          "destination" TEXT NOT NULL,
+          "departureDate" TIMESTAMPTZ NOT NULL,
+          "returnDate" TIMESTAMPTZ,
+          "status" TEXT NOT NULL DEFAULT 'SCHEDULED',
+          "notes" TEXT,
+          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT "Trip_pkey" PRIMARY KEY ("id")
         )
       `
 
@@ -100,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     if (!existingUsers || (existingUsers as any[]).length === 0) {
       console.log('👥 Applying users migration...')
-      
+
       // Create UserRole enum
       await prisma.$executeRaw`
         CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER')
@@ -121,8 +139,8 @@ export async function POST(request: NextRequest) {
           "name" TEXT NOT NULL,
           "role" "UserRole" NOT NULL DEFAULT 'USER',
           "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+          "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
           CONSTRAINT "User_pkey" PRIMARY KEY ("id")
         )
       `
@@ -134,7 +152,7 @@ export async function POST(request: NextRequest) {
 
       // Add foreign key constraint
       await prisma.$executeRaw`
-        ALTER TABLE "Trip" ADD CONSTRAINT "Trip_userId_fkey" 
+        ALTER TABLE "Trip" ADD CONSTRAINT "Trip_userId_fkey"
         FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE
       `
 
@@ -155,15 +173,16 @@ export async function POST(request: NextRequest) {
         message: 'Migrations applied successfully',
         migrations: [
           { id: initialMigrationId, applied: true },
-          { id: usersMigrationId, applied: true }
-        ]
+          { id: usersMigrationId, applied: true },
+        ],
       },
       { status: 200 }
     )
   } catch (error) {
     console.error('❌ Error applying migrations:', error)
-    
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
 
     return NextResponse.json(
       {
@@ -184,8 +203,8 @@ export async function GET() {
 
     // Check current migration status
     const migrations = await prisma.$queryRaw`
-      SELECT id, migration_name, started_at, finished_at, applied_steps_count 
-      FROM _prisma_migrations 
+      SELECT id, migration_name, started_at, finished_at, applied_steps_count
+      FROM _prisma_migrations
       ORDER BY started_at
     `
 
@@ -200,8 +219,9 @@ export async function GET() {
     )
   } catch (error) {
     console.error('❌ Error checking migration status:', error)
-    
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
 
     return NextResponse.json(
       {
