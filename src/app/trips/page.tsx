@@ -24,7 +24,7 @@ export default function TripsPage() {
     destination: '',
     departureDate: '',
     returnDate: '',
-    status: 'SCHEDULED' as const,
+    status: 'SCHEDULED' as 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED',
     notes: ''
   })
 
@@ -123,8 +123,8 @@ export default function TripsPage() {
       clientId: trip.clientId,
       origin: trip.origin,
       destination: trip.destination,
-      departureDate: trip.departureDate.split('T')[0],
-      returnDate: trip.returnDate ? trip.returnDate.split('T')[0] : '',
+      departureDate: trip.departureDate.toISOString().split('T')[0],
+      returnDate: trip.returnDate ? trip.returnDate.toISOString().split('T')[0] : '',
       status: trip.status,
       notes: trip.notes || ''
     })

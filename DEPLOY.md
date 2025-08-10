@@ -54,6 +54,7 @@ git push origin main
 4. Configure as variáveis de ambiente:
    ```
    DATABASE_URL=sua_url_do_banco_postgresql
+   JWT_SECRET=trip-control-super-secret-jwt-key-2024
    ```
 5. Clique em "Deploy"
 
@@ -70,6 +71,7 @@ vercel
 
 # Configurar variáveis de ambiente
 vercel env add DATABASE_URL
+vercel env add JWT_SECRET
 ```
 
 ### 4. Configurar Variáveis de Ambiente
@@ -82,36 +84,55 @@ Na Vercel, vá em:
    Value: sua_url_do_banco_postgresql
    Environment: Production, Preview, Development
    ```
-
-### 5. Configurar o Banco
-
-Após o primeiro deploy:
-1. Acesse seu projeto na Vercel
-2. O Prisma irá criar as tabelas automaticamente
-3. Para dados de exemplo, execute:
-   ```bash
-   # Via Vercel CLI
-   vercel env pull .env.local
-   npm run seed
    ```
+   Name: JWT_SECRET
+   Value: trip-control-super-secret-jwt-key-2024
+   Environment: Production, Preview, Development
+   ```
+
+### 5. Setup Automático do Banco
+
+O projeto está configurado para criar automaticamente:
+- ✅ **Usuário admin** (admin/admin)
+- ✅ **Dados de exemplo** (veículos, motoristas, clientes)
+
+**Após o deploy:**
+1. Acesse seu projeto na Vercel
+2. O setup automático será executado
+3. Use as credenciais: `admin` / `admin`
+
+### 6. Setup Manual (Se necessário)
+
+Se o setup automático não funcionar, você pode executar manualmente:
+
+```bash
+# Via API (recomendado)
+curl -X POST https://seu-projeto.vercel.app/api/setup
+
+# Ou via Vercel CLI
+vercel env pull .env.local
+npm run setup-db
+```
 
 ## 🔍 Verificação do Deploy
 
 ### Checklist
 - [ ] Build sem erros
 - [ ] Banco de dados conectado
-- [ ] Tabelas criadas
-- [ ] Aplicação funcionando
+- [ ] Usuário admin criado
+- [ ] Dados de exemplo carregados
+- [ ] Login funcionando
 - [ ] SSL ativo
 - [ ] Domínio personalizado (opcional)
 
 ### Testes
 1. Acesse a URL do projeto
-2. Teste o cadastro de veículos
-3. Teste o cadastro de motoristas
-4. Teste o cadastro de clientes
-5. Teste o cadastro de viagens
-6. Verifique a busca de cidades
+2. **Login com admin/admin**
+3. Teste o cadastro de veículos
+4. Teste o cadastro de motoristas
+5. Teste o cadastro de clientes
+6. Teste o cadastro de viagens
+7. Verifique a busca de cidades
 
 ## 🛠️ Troubleshooting
 
@@ -132,6 +153,11 @@ Após o primeiro deploy:
 ### Erro: "API routes not working"
 - Verifique se as rotas estão em `src/app/api/`
 - Confirme se o Next.js está configurado corretamente
+
+### Erro: "Usuário admin não criado"
+- Execute o setup manual: `POST /api/setup`
+- Verifique os logs da Vercel
+- Confirme se as variáveis de ambiente estão corretas
 
 ## 📊 Monitoramento
 
@@ -190,4 +216,8 @@ Após o primeiro deploy:
 🎉 **Parabéns!** Seu TripControl está no ar!
 
 **URL do projeto**: https://seu-projeto.vercel.app
+
+**Credenciais de acesso**:
+- **Usuário**: `admin`
+- **Senha**: `admin`
 
