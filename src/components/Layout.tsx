@@ -1,6 +1,22 @@
 'use client'
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon, TruckIcon, UserGroupIcon, BuildingOfficeIcon, MapIcon, UsersIcon } from '@heroicons/react/24/outline'
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from '@headlessui/react'
+import {
+  Bars3Icon,
+  XMarkIcon,
+  TruckIcon,
+  UserGroupIcon,
+  BuildingOfficeIcon,
+  MapIcon,
+  UsersIcon,
+} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -63,12 +79,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
                     <div className="flex items-center">
-                      <Logo width={32} height={32} className="text-orange-600" />
-                      <span className="ml-2 text-xl font-bold text-gray-900">TripControl</span>
+                      <Logo
+                        width={32}
+                        height={32}
+                        className="text-orange-600"
+                      />
+                      <span className="ml-2 text-xl font-bold text-gray-900">
+                        TripControl
+                      </span>
                     </div>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    {navigation.map((item) => {
+                    {navigation.map(item => {
                       const isActive = pathname === item.href
                       return (
                         <Link
@@ -140,7 +162,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <DisclosurePanel className="sm:hidden">
               <div className="space-y-1 pb-3 pt-2">
-                {navigation.map((item) => {
+                {navigation.map(item => {
                   const isActive = pathname === item.href
                   return (
                     <DisclosureButton
@@ -172,8 +194,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user?.name}</div>
-                    <div className="text-sm font-medium text-gray-500">{user?.email}</div>
+                    <div className="text-base font-medium text-gray-800">
+                      {user?.name}
+                    </div>
+                    <div className="text-sm font-medium text-gray-500">
+                      {user?.email}
+                    </div>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
@@ -199,4 +225,4 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Footer />
     </div>
   )
-} 
+}

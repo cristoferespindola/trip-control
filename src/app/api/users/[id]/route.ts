@@ -46,7 +46,8 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const { username, email, name, password, role, status } = await request.json()
+    const { username, email, name, password, role, status } =
+      await request.json()
 
     if (!username || !email || !name || !role || !status) {
       return NextResponse.json(
@@ -100,10 +101,7 @@ export async function PUT(
     })
 
     if (existingEmail) {
-      return NextResponse.json(
-        { message: 'Email já existe' },
-        { status: 400 }
-      )
+      return NextResponse.json({ message: 'Email já existe' }, { status: 400 })
     }
 
     const updatedUser = await prisma.user.update({

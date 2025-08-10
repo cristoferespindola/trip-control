@@ -1,13 +1,13 @@
-import LogoSVG from "../icons/trip-control-logo";
+import LogoSVG from '../icons/trip-control-logo'
 
 export default function Logo({
   width = 32,
   height = 32,
-  className = "",
+  className = '',
 }: {
-  width?: number;
-  height?: number;
-  className?: string;
+  width?: number
+  height?: number
+  className?: string
 }) {
   return (
     <LogoSVG
@@ -16,5 +16,5 @@ export default function Logo({
       className={className}
       color="currentColor"
     />
-  );
+  )
 }

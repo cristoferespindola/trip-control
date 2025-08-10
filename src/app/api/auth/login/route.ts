@@ -37,17 +37,14 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-      return NextResponse.json(
-        { message: 'Senha incorreta' },
-        { status: 401 }
-      )
+      return NextResponse.json({ message: 'Senha incorreta' }, { status: 401 })
     }
 
     const token = jwt.sign(
-      { 
-        userId: user.id, 
-        username: user.username, 
-        role: user.role 
+      {
+        userId: user.id,
+        username: user.username,
+        role: user.role,
       },
       JWT_SECRET,
       { expiresIn: '24h' }

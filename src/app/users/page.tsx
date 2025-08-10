@@ -17,7 +17,7 @@ export default function UsersPage() {
     name: '',
     password: '',
     role: 'USER' as const,
-    status: 'ACTIVE' as const
+    status: 'ACTIVE' as const,
   })
 
   useEffect(() => {
@@ -40,16 +40,16 @@ export default function UsersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const url = editingUser ? `/api/users/${editingUser.id}` : '/api/users'
       const method = editingUser ? 'PUT' : 'POST'
-      
+
       const userData = { ...formData }
       if (!userData.password && editingUser) {
         delete (userData as any).password
       }
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -81,7 +81,7 @@ export default function UsersPage() {
       name: user.name,
       password: '',
       role: user.role as any,
-      status: user.status as any
+      status: user.status as any,
     })
     setIsModalOpen(true)
   }
@@ -113,7 +113,7 @@ export default function UsersPage() {
       name: '',
       password: '',
       role: 'USER',
-      status: 'ACTIVE'
+      status: 'ACTIVE',
     })
   }
 
@@ -131,37 +131,53 @@ export default function UsersPage() {
 
   const getRoleText = (role: string) => {
     switch (role) {
-      case 'ADMIN': return 'Administrador'
-      case 'MANAGER': return 'Gerente'
-      case 'USER': return 'Usuário'
-      default: return role
+      case 'ADMIN':
+        return 'Administrador'
+      case 'MANAGER':
+        return 'Gerente'
+      case 'USER':
+        return 'Usuário'
+      default:
+        return role
     }
   }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'Ativo'
-      case 'INACTIVE': return 'Inativo'
-      case 'SUSPENDED': return 'Suspenso'
-      default: return status
+      case 'ACTIVE':
+        return 'Ativo'
+      case 'INACTIVE':
+        return 'Inativo'
+      case 'SUSPENDED':
+        return 'Suspenso'
+      default:
+        return status
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800'
-      case 'INACTIVE': return 'bg-gray-100 text-gray-800'
-      case 'SUSPENDED': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800'
+      case 'INACTIVE':
+        return 'bg-gray-100 text-gray-800'
+      case 'SUSPENDED':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'ADMIN': return 'bg-red-100 text-red-800'
-      case 'MANAGER': return 'bg-blue-100 text-blue-800'
-      case 'USER': return 'bg-green-100 text-green-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'ADMIN':
+        return 'bg-red-100 text-red-800'
+      case 'MANAGER':
+        return 'bg-blue-100 text-blue-800'
+      case 'USER':
+        return 'bg-green-100 text-green-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -191,7 +207,7 @@ export default function UsersPage() {
 
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-gray-200">
-          {users.map((user) => (
+          {users.map(user => (
             <li key={user.id} className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
@@ -199,7 +215,9 @@ export default function UsersPage() {
                     <div className="flex-shrink-0">
                       <div className="h-10 w-10 rounded-full bg-orange-600 flex items-center justify-center">
                         <span className="text-sm font-medium text-white">
-                          {user.name?.charAt(0) || user.username?.charAt(0) || 'U'}
+                          {user.name?.charAt(0) ||
+                            user.username?.charAt(0) ||
+                            'U'}
                         </span>
                       </div>
                     </div>
@@ -211,10 +229,14 @@ export default function UsersPage() {
                         {user.username} • {user.email}
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}
+                        >
                           {getRoleText(user.role)}
                         </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}
+                        >
                           {getStatusText(user.status)}
                         </span>
                       </div>
@@ -255,7 +277,9 @@ export default function UsersPage() {
               <input
                 type="text"
                 value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, username: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 placeholder="Digite o nome de usuário"
                 required
@@ -269,7 +293,9 @@ export default function UsersPage() {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 placeholder="Digite o email"
                 required
@@ -284,7 +310,7 @@ export default function UsersPage() {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="Digite o nome completo"
               required
@@ -298,7 +324,9 @@ export default function UsersPage() {
             <input
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={e =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="Digite a senha"
               required={!editingUser}
@@ -312,7 +340,9 @@ export default function UsersPage() {
               </label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                onChange={e =>
+                  setFormData({ ...formData, role: e.target.value as any })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >
@@ -328,7 +358,9 @@ export default function UsersPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={e =>
+                  setFormData({ ...formData, status: e.target.value as any })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >

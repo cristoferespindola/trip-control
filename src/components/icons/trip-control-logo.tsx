@@ -1,13 +1,13 @@
 export default function TripControlLogo({
   width = 1024,
   height = 1024,
-  className = "",
-  color = "currentColor",
+  className = '',
+  color = 'currentColor',
 }: {
-  width?: number;
-  height?: number;
-  className?: string;
-  color?: string;
+  width?: number
+  height?: number
+  className?: string
+  color?: string
 }) {
   return (
     <svg
@@ -31,5 +31,5 @@ export default function TripControlLogo({
         <path d="M7101 3939 c-108 -32 -209 -154 -227 -277 -26 -176 176 -288 356 -197 129 66 198 246 141 370 -44 96 -152 137 -270 104z" />
       </g>
     </svg>
-  );
+  )
 }

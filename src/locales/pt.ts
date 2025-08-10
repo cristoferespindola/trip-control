@@ -223,4 +223,4 @@ export const pt = {
     maxLength: 'Máximo de {max} caracteres',
     invalidFormat: 'Formato inválido',
   },
-};
+}

@@ -223,4 +223,4 @@ export const en = {
     maxLength: 'Maximum {max} characters',
     invalidFormat: 'Invalid format',
   },
-};
+}

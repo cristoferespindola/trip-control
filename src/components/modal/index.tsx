@@ -1,6 +1,12 @@
 'use client'
 
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, TransitionChild } from '@headlessui/react'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+} from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
 interface ModalProps {
@@ -15,10 +21,16 @@ const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
-  xl: 'max-w-xl'
+  xl: 'max-w-xl',
 }
 
-export default function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = 'md',
+}: ModalProps) {
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <DialogBackdrop
@@ -46,7 +58,7 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
                   </button>
                 </div>
               </TransitionChild>
-              
+
               <div className="relative flex h-full flex-col overflow-y-auto bg-white py-6 shadow-xl">
                 <div className="px-4 sm:px-6">
                   <DialogTitle className="text-lg font-semibold text-gray-900">

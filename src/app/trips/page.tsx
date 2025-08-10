@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TruckIcon, UserGroupIcon, BuildingOfficeIcon, MapIcon, PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import {
+  TruckIcon,
+  UserGroupIcon,
+  BuildingOfficeIcon,
+  MapIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline'
 import Modal from '@/components/modal'
 import { Trip, Vehicle, Driver, Client, City } from '@/types'
 
@@ -24,8 +32,12 @@ export default function TripsPage() {
     destination: '',
     departureDate: '',
     returnDate: '',
-    status: 'SCHEDULED' as 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED',
-    notes: ''
+    status: 'SCHEDULED' as
+      | 'SCHEDULED'
+      | 'IN_PROGRESS'
+      | 'COMPLETED'
+      | 'CANCELLED',
+    notes: '',
   })
 
   useEffect(() => {
@@ -87,11 +99,11 @@ export default function TripsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const url = editingTrip ? `/api/trips/${editingTrip.id}` : '/api/trips'
       const method = editingTrip ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -124,9 +136,11 @@ export default function TripsPage() {
       origin: trip.origin,
       destination: trip.destination,
       departureDate: trip.departureDate.toISOString().split('T')[0],
-      returnDate: trip.returnDate ? trip.returnDate.toISOString().split('T')[0] : '',
+      returnDate: trip.returnDate
+        ? trip.returnDate.toISOString().split('T')[0]
+        : '',
       status: trip.status,
-      notes: trip.notes || ''
+      notes: trip.notes || '',
     })
     setIsModalOpen(true)
   }
@@ -161,7 +175,7 @@ export default function TripsPage() {
       departureDate: '',
       returnDate: '',
       status: 'SCHEDULED',
-      notes: ''
+      notes: '',
     })
   }
 
@@ -196,7 +210,7 @@ export default function TripsPage() {
       const response = await fetch(
         `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?nome=${encodeURIComponent(query)}`
       )
-      
+
       if (response.ok) {
         const data = await response.json()
         const filteredCities = filterCities(data, query)
@@ -214,19 +228,24 @@ export default function TripsPage() {
 
   const filterCities = (cities: any[], query: string) => {
     const normalizedQuery = normalizeText(query)
-    
+
     return cities
       .filter((city: any) => {
         const cityName = normalizeText(city.nome)
-        const stateName = normalizeText(city.microrregiao?.mesorregiao?.UF?.nome || '')
-        return cityName.includes(normalizedQuery) || stateName.includes(normalizedQuery)
+        const stateName = normalizeText(
+          city.microrregiao?.mesorregiao?.UF?.nome || ''
+        )
+        return (
+          cityName.includes(normalizedQuery) ||
+          stateName.includes(normalizedQuery)
+        )
       })
       .sort((a: any, b: any) => {
         const aName = normalizeText(a.nome)
         const bName = normalizeText(b.nome)
         const aStartsWithQuery = aName.startsWith(normalizedQuery)
         const bStartsWithQuery = bName.startsWith(normalizedQuery)
-        
+
         if (aStartsWithQuery && !bStartsWithQuery) return -1
         if (!aStartsWithQuery && bStartsWithQuery) return 1
         return aName.localeCompare(bName)
@@ -240,21 +259,31 @@ export default function TripsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'SCHEDULED': return 'bg-blue-100 text-blue-800'
-      case 'IN_PROGRESS': return 'bg-yellow-100 text-yellow-800'
-      case 'COMPLETED': return 'bg-green-100 text-green-800'
-      case 'CANCELLED': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'SCHEDULED':
+        return 'bg-blue-100 text-blue-800'
+      case 'IN_PROGRESS':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800'
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'SCHEDULED': return 'Agendada'
-      case 'IN_PROGRESS': return 'Em Andamento'
-      case 'COMPLETED': return 'Concluída'
-      case 'CANCELLED': return 'Cancelada'
-      default: return status
+      case 'SCHEDULED':
+        return 'Agendada'
+      case 'IN_PROGRESS':
+        return 'Em Andamento'
+      case 'COMPLETED':
+        return 'Concluída'
+      case 'CANCELLED':
+        return 'Cancelada'
+      default:
+        return status
     }
   }
 
@@ -284,11 +313,11 @@ export default function TripsPage() {
 
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-gray-200">
-          {trips.map((trip) => {
+          {trips.map(trip => {
             const vehicle = vehicles.find(v => v.id === trip.vehicleId)
             const driver = drivers.find(d => d.id === trip.driverId)
             const client = clients.find(c => c.id === trip.clientId)
-            
+
             return (
               <li key={trip.id} className="px-6 py-4">
                 <div className="flex items-center justify-between">
@@ -300,14 +329,21 @@ export default function TripsPage() {
                           {trip.origin} → {trip.destination}
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>{vehicle?.plate} • {driver?.name} • {client?.name}</span>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}>
+                          <span>
+                            {vehicle?.plate} • {driver?.name} • {client?.name}
+                          </span>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}
+                          >
                             {getStatusText(trip.status)}
                           </span>
                         </div>
                         <p className="text-sm text-gray-500">
-                          {new Date(trip.departureDate).toLocaleDateString('pt-BR')}
-                          {trip.returnDate && ` - ${new Date(trip.returnDate).toLocaleDateString('pt-BR')}`}
+                          {new Date(trip.departureDate).toLocaleDateString(
+                            'pt-BR'
+                          )}
+                          {trip.returnDate &&
+                            ` - ${new Date(trip.returnDate).toLocaleDateString('pt-BR')}`}
                         </p>
                       </div>
                     </div>
@@ -346,12 +382,14 @@ export default function TripsPage() {
               </label>
               <select
                 value={formData.vehicleId}
-                onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, vehicleId: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >
                 <option value="">Selecione um veículo</option>
-                {vehicles.map((vehicle) => (
+                {vehicles.map(vehicle => (
                   <option key={vehicle.id} value={vehicle.id}>
                     {vehicle.plate} - {vehicle.brand} {vehicle.model}
                   </option>
@@ -365,12 +403,14 @@ export default function TripsPage() {
               </label>
               <select
                 value={formData.driverId}
-                onChange={(e) => setFormData({ ...formData, driverId: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, driverId: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >
                 <option value="">Selecione um motorista</option>
-                {drivers.map((driver) => (
+                {drivers.map(driver => (
                   <option key={driver.id} value={driver.id}>
                     {driver.name}
                   </option>
@@ -384,12 +424,14 @@ export default function TripsPage() {
               </label>
               <select
                 value={formData.clientId}
-                onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, clientId: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >
                 <option value="">Selecione um cliente</option>
-                {clients.map((client) => (
+                {clients.map(client => (
                   <option key={client.id} value={client.id}>
                     {client.name}
                   </option>
@@ -403,7 +445,9 @@ export default function TripsPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={e =>
+                  setFormData({ ...formData, status: e.target.value as any })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               >
@@ -422,7 +466,7 @@ export default function TripsPage() {
             <input
               type="text"
               value={formData.origin}
-              onChange={(e) => {
+              onChange={e => {
                 setFormData({ ...formData, origin: e.target.value })
                 searchCities(e.target.value)
               }}
@@ -456,7 +500,7 @@ export default function TripsPage() {
             <input
               type="text"
               value={formData.destination}
-              onChange={(e) => {
+              onChange={e => {
                 setFormData({ ...formData, destination: e.target.value })
                 searchCities(e.target.value)
               }}
@@ -471,7 +515,10 @@ export default function TripsPage() {
                     key={index}
                     type="button"
                     onClick={() => {
-                      setFormData({ ...formData, destination: formatCityName(city) })
+                      setFormData({
+                        ...formData,
+                        destination: formatCityName(city),
+                      })
                       setCities([])
                     }}
                     className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
@@ -491,7 +538,9 @@ export default function TripsPage() {
               <input
                 type="date"
                 value={formData.departureDate}
-                onChange={(e) => setFormData({ ...formData, departureDate: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, departureDate: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
                 required
               />
@@ -504,7 +553,9 @@ export default function TripsPage() {
               <input
                 type="date"
                 value={formData.returnDate}
-                onChange={(e) => setFormData({ ...formData, returnDate: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, returnDate: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
@@ -516,7 +567,9 @@ export default function TripsPage() {
             </label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               placeholder="Observações sobre a viagem"
@@ -542,4 +595,4 @@ export default function TripsPage() {
       </Modal>
     </div>
   )
-} 
+}

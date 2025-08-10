@@ -5,10 +5,10 @@ export async function GET() {
   try {
     const vehicles = await prisma.vehicle.findMany({
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
-    
+
     return NextResponse.json(vehicles)
   } catch (error) {
     return NextResponse.json(
@@ -21,7 +21,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     const vehicle = await prisma.vehicle.create({
       data: {
         plate: body.plate,
@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
         brand: body.brand,
         year: parseInt(body.year),
         capacity: parseInt(body.capacity),
-        status: body.status || 'ACTIVE'
-      }
+        status: body.status || 'ACTIVE',
+      },
     })
-    
+
     return NextResponse.json(vehicle, { status: 201 })
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     return NextResponse.json(
       { error: 'Erro ao criar veículo' },
       { status: 500 }
     )
   }
-} 
+}

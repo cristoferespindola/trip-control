@@ -8,16 +8,16 @@ export async function GET(
   try {
     const { id } = await params
     const driver = await prisma.driver.findUnique({
-      where: { id }
+      where: { id },
     })
-    
+
     if (!driver) {
       return NextResponse.json(
         { error: 'Motorista não encontrado' },
         { status: 404 }
       )
     }
-    
+
     return NextResponse.json(driver)
   } catch (error) {
     return NextResponse.json(
@@ -34,7 +34,7 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    
+
     const driver = await prisma.driver.update({
       where: { id },
       data: {
@@ -44,10 +44,10 @@ export async function PUT(
         phone: body.phone,
         email: body.email,
         address: body.address,
-        status: body.status
-      }
+        status: body.status,
+      },
     })
-    
+
     return NextResponse.json(driver)
   } catch (error: any) {
     if (error.code === 'P2025') {
@@ -56,14 +56,14 @@ export async function PUT(
         { status: 404 }
       )
     }
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'CPF ou CNH já cadastrado' },
         { status: 400 }
       )
     }
-    
+
     return NextResponse.json(
       { error: 'Erro ao atualizar motorista' },
       { status: 500 }
@@ -78,9 +78,9 @@ export async function DELETE(
   try {
     const { id } = await params
     await prisma.driver.delete({
-      where: { id }
+      where: { id },
     })
-    
+
     return NextResponse.json({ message: 'Motorista deletado com sucesso' })
   } catch (error: any) {
     if (error.code === 'P2025') {
@@ -89,10 +89,10 @@ export async function DELETE(
         { status: 404 }
       )
     }
-    
+
     return NextResponse.json(
       { error: 'Erro ao deletar motorista' },
       { status: 500 }
     )
   }
-} 
+}

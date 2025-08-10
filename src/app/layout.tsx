@@ -9,7 +9,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'TripControl - Sistema de Controle de Viagens',
-  description: 'Sistema completo para gestão de veículos, motoristas, clientes e viagens',
+  description:
+    'Sistema completo para gestão de veículos, motoristas, clientes e viagens',
 }
 
 export default function RootLayout({
@@ -22,9 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <TranslationProvider>
           <AuthProvider>
-            <Layout>
-              {children}
-            </Layout>
+            <Layout>{children}</Layout>
           </AuthProvider>
         </TranslationProvider>
       </body>

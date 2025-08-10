@@ -1,24 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Setting up database via API...');
+    console.log('🔧 Setting up database via API...')
 
     // Verificar se o usuário admin já existe
     const existingAdmin = await prisma.user.findUnique({
-      where: { username: 'admin' }
-    });
+      where: { username: 'admin' },
+    })
 
     if (!existingAdmin) {
-      console.log('👤 Creating admin user...');
-      
+      console.log('👤 Creating admin user...')
+
       // Hash da senha
-      const hashedPassword = await bcrypt.hash('admin', 10);
-      
+      const hashedPassword = await bcrypt.hash('admin', 10)
+
       // Criar usuário admin
       await prisma.user.create({
         data: {
@@ -27,22 +27,22 @@ export async function POST(request: NextRequest) {
           name: 'Administrator',
           password: hashedPassword,
           role: 'ADMIN',
-          status: 'ACTIVE'
-        }
-      });
-      
-      console.log('✅ Admin user created successfully!');
+          status: 'ACTIVE',
+        },
+      })
+
+      console.log('✅ Admin user created successfully!')
     } else {
-      console.log('✅ Admin user already exists');
+      console.log('✅ Admin user already exists')
     }
 
-    const vehicleCount = await prisma.vehicle.count();
-    const driverCount = await prisma.driver.count();
-    const clientCount = await prisma.client.count();
+    const vehicleCount = await prisma.vehicle.count()
+    const driverCount = await prisma.driver.count()
+    const clientCount = await prisma.client.count()
 
     if (vehicleCount === 0 && driverCount === 0 && clientCount === 0) {
-      console.log('📊 Creating sample data...');
-      
+      console.log('📊 Creating sample data...')
+
       const vehicles = await Promise.all([
         prisma.vehicle.create({
           data: {
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
             brand: 'Mercedes-Benz',
             year: 2022,
             capacity: 12,
-            status: 'ACTIVE'
-          }
+            status: 'ACTIVE',
+          },
         }),
         prisma.vehicle.create({
           data: {
@@ -61,10 +61,10 @@ export async function POST(request: NextRequest) {
             brand: 'Renault',
             year: 2021,
             capacity: 8,
-            status: 'ACTIVE'
-          }
-        })
-      ]);
+            status: 'ACTIVE',
+          },
+        }),
+      ])
 
       // Criar motoristas de exemplo
       const drivers = await Promise.all([
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
             phone: '(11) 99999-9999',
             email: 'joao@exemplo.com',
             address: 'Rua das Flores, 123 - São Paulo, SP',
-            status: 'ACTIVE'
-          }
+            status: 'ACTIVE',
+          },
         }),
         prisma.driver.create({
           data: {
@@ -87,10 +87,10 @@ export async function POST(request: NextRequest) {
             phone: '(11) 88888-8888',
             email: 'maria@exemplo.com',
             address: 'Av. Paulista, 456 - São Paulo, SP',
-            status: 'ACTIVE'
-          }
-        })
-      ]);
+            status: 'ACTIVE',
+          },
+        }),
+      ])
 
       const clients = await Promise.all([
         prisma.client.create({
@@ -100,8 +100,8 @@ export async function POST(request: NextRequest) {
             phone: '(11) 77777-7777',
             email: 'contato@empresaabc.com',
             address: 'Rua do Comércio, 789 - São Paulo, SP',
-            status: 'ACTIVE'
-          }
+            status: 'ACTIVE',
+          },
         }),
         prisma.client.create({
           data: {
@@ -110,17 +110,19 @@ export async function POST(request: NextRequest) {
             phone: '(11) 66666-6666',
             email: 'contato@transportadoraxyz.com',
             address: 'Av. Industrial, 321 - São Paulo, SP',
-            status: 'ACTIVE'
-          }
-        })
-      ]);
+            status: 'ACTIVE',
+          },
+        }),
+      ])
 
-      console.log(`✅ Created ${vehicles.length} vehicles, ${drivers.length} drivers, and ${clients.length} clients`);
+      console.log(
+        `✅ Created ${vehicles.length} vehicles, ${drivers.length} drivers, and ${clients.length} clients`
+      )
     } else {
-      console.log('✅ Sample data already exists');
+      console.log('✅ Sample data already exists')
     }
 
-    console.log('🎉 Database setup completed successfully!');
+    console.log('🎉 Database setup completed successfully!')
 
     return NextResponse.json({
       success: true,
@@ -128,21 +130,20 @@ export async function POST(request: NextRequest) {
       adminUser: {
         username: 'admin',
         email: 'admin@tripcontrol.com',
-        password: 'admin'
-      }
-    });
-
+        password: 'admin',
+      },
+    })
   } catch (error) {
-    console.error('❌ Error setting up database:', error);
+    console.error('❌ Error setting up database:', error)
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Failed to setup database',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }

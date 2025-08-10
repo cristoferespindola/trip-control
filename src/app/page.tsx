@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   TruckIcon,
@@ -6,68 +6,68 @@ import {
   BuildingOfficeIcon,
   MapIcon,
   UsersIcon,
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
-import { useTranslation } from "@/locales";
+} from '@heroicons/react/24/outline'
+import Link from 'next/link'
+import { useTranslation } from '@/locales'
 
 const stats = [
-  { name: "dashboard.stats.totalVehicles", value: "12", icon: TruckIcon },
-  { name: "dashboard.stats.totalDrivers", value: "8", icon: UserGroupIcon },
+  { name: 'dashboard.stats.totalVehicles', value: '12', icon: TruckIcon },
+  { name: 'dashboard.stats.totalDrivers', value: '8', icon: UserGroupIcon },
   {
-    name: "dashboard.stats.totalClients",
-    value: "24",
+    name: 'dashboard.stats.totalClients',
+    value: '24',
     icon: BuildingOfficeIcon,
   },
-  { name: "dashboard.stats.totalTrips", value: "156", icon: MapIcon },
-];
+  { name: 'dashboard.stats.totalTrips', value: '156', icon: MapIcon },
+]
 
 const modules = [
   {
-    name: "dashboard.modules.vehicles",
-    href: "/vehicles",
+    name: 'dashboard.modules.vehicles',
+    href: '/vehicles',
     icon: TruckIcon,
-    color: "bg-blue-500",
+    color: 'bg-blue-500',
   },
   {
-    name: "dashboard.modules.drivers",
-    href: "/drivers",
+    name: 'dashboard.modules.drivers',
+    href: '/drivers',
     icon: UserGroupIcon,
-    color: "bg-green-500",
+    color: 'bg-green-500',
   },
   {
-    name: "dashboard.modules.clients",
-    href: "/clients",
+    name: 'dashboard.modules.clients',
+    href: '/clients',
     icon: BuildingOfficeIcon,
-    color: "bg-purple-500",
+    color: 'bg-purple-500',
   },
   {
-    name: "dashboard.modules.trips",
-    href: "/trips",
+    name: 'dashboard.modules.trips',
+    href: '/trips',
     icon: MapIcon,
-    color: "bg-orange-500",
+    color: 'bg-orange-500',
   },
   {
-    name: "dashboard.modules.users",
-    href: "/users",
+    name: 'dashboard.modules.users',
+    href: '/users',
     icon: UsersIcon,
-    color: "bg-red-500",
+    color: 'bg-red-500',
   },
-];
+]
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">
-          {t("dashboard.title")}
+          {t('dashboard.title')}
         </h1>
-        <p className="mt-2 text-gray-600">{t("dashboard.subtitle")}</p>
+        <p className="mt-2 text-gray-600">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((item) => (
+        {stats.map(item => (
           <div
             key={item.name}
             className="relative overflow-hidden rounded-lg bg-white p-4 shadow sm:p-6"
@@ -91,10 +91,10 @@ export default function Dashboard() {
 
       <div>
         <h2 className="text-lg font-medium text-gray-900 mb-4">
-          {t("dashboard.quickActions")}
+          {t('dashboard.quickActions')}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {modules.map((module) => (
+          {modules.map(module => (
             <Link
               key={module.name}
               href={module.href}
@@ -133,5 +133,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

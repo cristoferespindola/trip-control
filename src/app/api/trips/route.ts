@@ -51,7 +51,15 @@ export async function POST(request: NextRequest) {
       userId,
     } = await request.json()
 
-    if (!origin || !destination || !departureDate || !vehicleId || !driverId || !clientId || !userId) {
+    if (
+      !origin ||
+      !destination ||
+      !departureDate ||
+      !vehicleId ||
+      !driverId ||
+      !clientId ||
+      !userId
+    ) {
       return NextResponse.json(
         { message: 'Campos obrigatórios não preenchidos' },
         { status: 400 }
@@ -98,4 +106,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}
