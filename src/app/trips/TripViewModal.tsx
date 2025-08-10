@@ -57,7 +57,7 @@ export default function TripViewModal({
       open={open}
       onClose={onClose}
       title={`Detalhes da Viagem - ${trip.origin} → ${trip.destination}`}
-      size="xl"
+      size="2xl"
     >
       <div className="space-y-6">
         {/* Informações da Viagem */}

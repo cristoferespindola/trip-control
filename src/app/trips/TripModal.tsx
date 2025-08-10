@@ -66,11 +66,8 @@ export default function TripModal({
         returnDate: editingTrip.returnDate
           ? formatDate(editingTrip.returnDate)
           : '',
-        distance: editingTrip.distance?.toString() || '',
-        fuelCost: editingTrip.fuelCost?.toString() || '',
-        tollCost: editingTrip.tollCost?.toString() || '',
-        otherCosts: editingTrip.otherCosts?.toString() || '',
-        totalCost: editingTrip.totalCost?.toString() || '',
+        initialKilometer: editingTrip.initialKilometer?.toString() || '',
+        finalKilometer: editingTrip.finalKilometer?.toString() || '',
         status: editingTrip.status,
         notes: editingTrip.notes || '',
       })
@@ -88,11 +85,8 @@ export default function TripModal({
       destination: '',
       departureDate: '',
       returnDate: '',
-      distance: '',
-      fuelCost: '',
-      tollCost: '',
-      otherCosts: '',
-      totalCost: '',
+      initialKilometer: '',
+      finalKilometer: '',
       status: 'SCHEDULED',
       notes: '',
     })

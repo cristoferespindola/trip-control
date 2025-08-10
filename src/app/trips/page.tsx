@@ -114,6 +114,8 @@ export default function TripsPage() {
       const url = editingTrip ? `/api/trips/${editingTrip.id}` : '/api/trips'
       const method = editingTrip ? 'PUT' : 'POST'
 
+      console.log(user)
+
       const tripData = {
         ...formData,
         userId: user.id,
