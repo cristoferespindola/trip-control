@@ -90,6 +90,8 @@ model Trip {
   returnDate   DateTime?
   initialKilometer Int?
   finalKilometer   Int?
+
+  tripValue     Float?
   status       TripStatus  @default(SCHEDULED)
   notes        String?
   createdAt    DateTime    @default(now())

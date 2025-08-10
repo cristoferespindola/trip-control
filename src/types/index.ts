@@ -55,6 +55,7 @@ export interface Trip {
   returnDate?: Date
   initialKilometer?: number
   finalKilometer?: number
+  tripValue?: number
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
   notes?: string
   vehicleId: string

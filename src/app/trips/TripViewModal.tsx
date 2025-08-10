@@ -110,11 +110,30 @@ export default function TripViewModal({
                   {trip.finalKilometer - trip.initialKilometer} km
                 </p>
               )}
+              {trip.tripValue && trip.expenses && trip.expenses.length > 0 && (
+                <>
+                  <p className="text-sm text-gray-600">
+                    <strong>Total de Despesas:</strong> R${' '}
+                    {trip.expenses
+                      .reduce((total, expense) => total + expense.value, 0)
+                      .toFixed(2)}
+                  </p>
+                  <p className="text-sm font-semibold text-green-600">
+                    <strong>Valor Final:</strong> R${' '}
+                    {(
+                      trip.tripValue -
+                      trip.expenses.reduce(
+                        (total, expense) => total + expense.value,
+                        0
+                      )
+                    ).toFixed(2)}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Informações dos Participantes */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             Participantes
@@ -147,7 +166,6 @@ export default function TripViewModal({
           </div>
         </div>
 
-        {/* Observações */}
         {trip.notes && (
           <div className="bg-gray-50 rounded-lg p-4">
             <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -157,7 +175,6 @@ export default function TripViewModal({
           </div>
         )}
 
-        {/* Tabela de Despesas */}
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-900">
@@ -226,7 +243,6 @@ export default function TripViewModal({
           )}
         </div>
 
-        {/* Informações do Sistema */}
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             Informações do Sistema

@@ -37,6 +37,7 @@ export default function TripModal({
     returnDate: '',
     initialKilometer: '',
     finalKilometer: '',
+    tripValue: '',
     status: 'SCHEDULED' as
       | 'SCHEDULED'
       | 'IN_PROGRESS'
@@ -63,6 +64,7 @@ export default function TripModal({
         origin: editingTrip.origin,
         destination: editingTrip.destination,
         departureDate: formatDate(editingTrip.departureDate),
+        tripValue: editingTrip.tripValue?.toString() || '',
         returnDate: editingTrip.returnDate
           ? formatDate(editingTrip.returnDate)
           : '',
@@ -85,6 +87,7 @@ export default function TripModal({
       destination: '',
       departureDate: '',
       returnDate: '',
+      tripValue: '',
       initialKilometer: '',
       finalKilometer: '',
       status: 'SCHEDULED',
@@ -239,6 +242,32 @@ export default function TripModal({
             value={formData.finalKilometer}
             onChange={e =>
               setFormData({ ...formData, finalKilometer: e.target.value })
+            }
+            placeholder="0"
+            required={false}
+          />
+
+          <Input
+            label="Valor do Frete"
+            name="tripValue"
+            type="number"
+            value={formData.tripValue}
+            onChange={e =>
+              setFormData({ ...formData, tripValue: e.target.value })
+            }
+            placeholder="0.00"
+            required={false}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Valor da Viagem"
+            name="tripValue"
+            type="number"
+            value={formData.tripValue}
+            onChange={e =>
+              setFormData({ ...formData, tripValue: e.target.value })
             }
             placeholder="0"
             required={false}
