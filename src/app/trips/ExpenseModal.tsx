@@ -313,6 +313,7 @@ export default function ExpenseModal({
               type="date"
               value={formData.date}
               onChange={e => setFormData({ ...formData, date: e.target.value })}
+              placeholder="dd/mm/aaaa"
               required
             />
           </div>
