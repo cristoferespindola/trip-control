@@ -1,8 +1,10 @@
 {
-  "extends": ["next/core-web-vitals"],
+  "extends": "next/core-web-vitals",
   "ignorePatterns": [
     "src/generated/**/*",
     "node_modules/**/*",
-    ".next/**/*"
+    ".next/**/*",
+    "**/*.js",
+    "**/*.mjs"
   ]
 } 

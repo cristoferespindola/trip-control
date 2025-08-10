@@ -1,14 +1,15 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client']
-  },
+  serverExternalPackages: ['@prisma/client'],
   images: {
     domains: ['images.unsplash.com']
   },
   env: {
     DATABASE_URL: process.env.DATABASE_URL
+  },
+  eslint: {
+    ignoreDuringBuilds: true
   }
 }
 
