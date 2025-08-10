@@ -42,7 +42,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-24 w-24 flex items-center justify-center">
-            <Logo width={96} height={96} />
+            <Logo width={96} height={96} className="text-orange-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             {t('login.title')}
