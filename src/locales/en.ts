@@ -208,6 +208,87 @@ export const en = {
     },
   },
 
+  // Reports
+  reports: {
+    title: 'Reports',
+    subtitle:
+      'Access detailed reports about trips, expenses and financial analysis',
+    accessReport: 'Access report',
+    byVehicle: {
+      title: 'Trips by Vehicle',
+      description: 'Report of trips grouped by vehicle',
+    },
+    byDriver: {
+      title: 'Trips by Driver',
+      description: 'Report of trips grouped by driver',
+    },
+    byClient: {
+      title: 'Trips by Client',
+      description: 'Report of trips grouped by client',
+    },
+    expenses: {
+      title: 'Expenses Report',
+      description: 'Detailed expense analysis',
+    },
+    financial: {
+      title: 'Financial Report',
+      description: 'Complete financial analysis',
+    },
+    detailedTrips: 'Detailed Trips',
+    totalTrips: 'Total Trips',
+    totalExpenses: 'Total Expenses',
+    expensesLabel: 'Expenses',
+    totalValue: 'Total Value',
+    finalValue: 'Final Value',
+    loadingReport: 'Loading report...',
+    loadingFinancial: 'Loading financial report...',
+    loadingExpenses: 'Loading expenses...',
+    noDataForPeriod: 'No data found for the selected period',
+  },
+
+  // Settings
+  settings: {
+    title: 'Company Settings',
+    subtitle: 'Customize your company name, colors and information',
+    companyName: 'Company Name',
+    companySlogan: 'Slogan',
+    primaryColor: 'Primary Color',
+    secondaryColor: 'Secondary Color',
+    logo: 'Company Logo',
+    favicon: 'Favicon',
+    contactEmail: 'Contact Email',
+    contactPhone: 'Contact Phone',
+    website: 'Website',
+    address: 'Address',
+    cnpj: 'CNPJ',
+    saveSettings: 'Save Settings',
+    saving: 'Saving...',
+    updatedSuccess: 'Settings updated successfully!',
+    updateError: 'Error updating settings',
+    placeholders: {
+      companyName: 'Your company name',
+      slogan: 'Company slogan',
+      contactEmail: 'contact@company.com',
+      contactPhone: '(11) 99999-9999',
+      website: 'https://company.com',
+      cnpj: '00.000.000/0000-00',
+      address: 'Complete company address',
+    },
+  },
+
+  // Image Upload
+  upload: {
+    uploading: 'Uploading...',
+    upload: 'Upload',
+    acceptedFormats: 'Accepted formats: JPG, PNG, GIF, WebP, SVG',
+    maxSize: 'Maximum size: 5MB',
+    willReplace: '⚠️ Current image will be replaced',
+    unsupportedType: 'Unsupported file type. Use: JPG, PNG, GIF, WebP or SVG',
+    fileTooLarge: 'File too large. Maximum 5MB',
+    uploadError: 'Upload error',
+    serverError: 'Internal server error',
+  },
+
   // Login
   login: {
     title: 'TripControl',

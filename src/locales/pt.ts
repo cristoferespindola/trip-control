@@ -208,6 +208,88 @@ export const pt = {
     },
   },
 
+  // Relatórios
+  reports: {
+    title: 'Relatórios',
+    subtitle:
+      'Acesse relatórios detalhados sobre viagens, despesas e análise financeira',
+    accessReport: 'Acessar relatório',
+    byVehicle: {
+      title: 'Viagens por Veículo',
+      description: 'Relatório de viagens agrupadas por veículo',
+    },
+    byDriver: {
+      title: 'Viagens por Motorista',
+      description: 'Relatório de viagens agrupadas por motorista',
+    },
+    byClient: {
+      title: 'Viagens por Cliente',
+      description: 'Relatório de viagens agrupadas por cliente',
+    },
+    expenses: {
+      title: 'Relatório de Despesas',
+      description: 'Análise detalhada de despesas',
+    },
+    financial: {
+      title: 'Relatório Financeiro',
+      description: 'Análise financeira completa',
+    },
+    detailedTrips: 'Viagens Detalhadas',
+    totalTrips: 'Total de Viagens',
+    totalExpenses: 'Total de Despesas',
+    expensesLabel: 'Despesas',
+    totalValue: 'Valor Total',
+    finalValue: 'Valor Final',
+    loadingReport: 'Carregando relatório...',
+    loadingFinancial: 'Carregando relatório financeiro...',
+    loadingExpenses: 'Carregando despesas...',
+    noDataForPeriod: 'Nenhum dado encontrado para o período selecionado',
+  },
+
+  // Configurações
+  settings: {
+    title: 'Configurações da Empresa',
+    subtitle: 'Personalize o nome, cores e informações da sua empresa',
+    companyName: 'Nome da Empresa',
+    companySlogan: 'Slogan',
+    primaryColor: 'Cor Primária',
+    secondaryColor: 'Cor Secundária',
+    logo: 'Logo da Empresa',
+    favicon: 'Favicon',
+    contactEmail: 'Email de Contato',
+    contactPhone: 'Telefone de Contato',
+    website: 'Website',
+    address: 'Endereço',
+    cnpj: 'CNPJ',
+    saveSettings: 'Salvar Configurações',
+    saving: 'Salvando...',
+    updatedSuccess: 'Configurações atualizadas com sucesso!',
+    updateError: 'Erro ao atualizar configurações',
+    placeholders: {
+      companyName: 'Nome da sua empresa',
+      slogan: 'Slogan da empresa',
+      contactEmail: 'contato@empresa.com',
+      contactPhone: '(11) 99999-9999',
+      website: 'https://empresa.com',
+      cnpj: '00.000.000/0000-00',
+      address: 'Endereço completo da empresa',
+    },
+  },
+
+  // Upload de Imagens
+  upload: {
+    uploading: 'Enviando...',
+    upload: 'Upload',
+    acceptedFormats: 'Formatos aceitos: JPG, PNG, GIF, WebP, SVG',
+    maxSize: 'Tamanho máximo: 5MB',
+    willReplace: '⚠️ A imagem atual será substituída',
+    unsupportedType:
+      'Tipo de arquivo não suportado. Use: JPG, PNG, GIF, WebP ou SVG',
+    fileTooLarge: 'Arquivo muito grande. Máximo 5MB',
+    uploadError: 'Erro no upload',
+    serverError: 'Erro interno no servidor',
+  },
+
   // Login
   login: {
     title: 'TripControl',

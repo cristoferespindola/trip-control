@@ -1,4 +1,3 @@
-import { useCompanySettings } from '../../contexts/CompanySettingsContext'
 import LogoSVG from '../icons/trip-control-logo'
 
 export default function DefaultLogo({
@@ -10,9 +9,6 @@ export default function DefaultLogo({
   height?: number
   className?: string
 }) {
-  const { settings } = useCompanySettings()
-  console.log(settings)
-
   return (
     <LogoSVG
       width={width}

@@ -48,10 +48,10 @@ export default function SettingsPage() {
 
     try {
       await updateSettings(formData)
-      alert('Configurações atualizadas com sucesso!')
+      alert(t('settings.updatedSuccess'))
     } catch (error) {
       console.error('Erro ao atualizar configurações:', error)
-      setError('Erro ao atualizar configurações')
+      setError(t('settings.updateError'))
     } finally {
       setIsSaving(false)
     }
@@ -99,11 +99,9 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Configurações da Empresa
+          {t('settings.title')}
         </h1>
-        <p className="mt-2 text-gray-600">
-          Personalize o nome, cores e informações da sua empresa
-        </p>
+        <p className="mt-2 text-gray-600">{t('settings.subtitle')}</p>
       </div>
 
       {error && (
@@ -117,31 +115,31 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Nome da Empresa"
+                label={t('settings.companyName')}
                 name="companyName"
                 type="text"
                 value={formData.companyName || ''}
                 onChange={e => handleInputChange('companyName', e.target.value)}
-                placeholder="Nome da sua empresa"
+                placeholder={t('settings.placeholders.companyName')}
                 required
               />
 
               <Input
-                label="Slogan"
+                label={t('settings.companySlogan')}
                 name="companySlogan"
                 type="text"
                 value={formData.companySlogan || ''}
                 onChange={e =>
                   handleInputChange('companySlogan', e.target.value)
                 }
-                placeholder="Slogan da empresa"
+                placeholder={t('settings.placeholders.slogan')}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cor Primária
+                  {t('settings.primaryColor')}
                 </label>
                 <div className="flex items-center space-x-2">
                   <input
@@ -166,7 +164,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cor Secundária
+                  {t('settings.secondaryColor')}
                 </label>
                 <div className="flex items-center space-x-2">
                   <input
@@ -195,7 +193,7 @@ export default function SettingsPage() {
                 currentUrl={formData.logoUrl}
                 onUpload={handleLogoUpload}
                 onError={handleUploadError}
-                label="Logo da Empresa"
+                label={t('settings.logo')}
                 folder="logos"
               />
 
@@ -203,66 +201,66 @@ export default function SettingsPage() {
                 currentUrl={formData.faviconUrl}
                 onUpload={handleFaviconUpload}
                 onError={handleUploadError}
-                label="Favicon"
+                label={t('settings.favicon')}
                 folder="favicons"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Email de Contato"
+                label={t('settings.contactEmail')}
                 name="contactEmail"
                 type="email"
                 value={formData.contactEmail || ''}
                 onChange={e =>
                   handleInputChange('contactEmail', e.target.value)
                 }
-                placeholder="contato@empresa.com"
+                placeholder={t('settings.placeholders.contactEmail')}
               />
 
               <Input
-                label="Telefone de Contato"
+                label={t('settings.contactPhone')}
                 name="contactPhone"
                 type="tel"
                 value={formData.contactPhone || ''}
                 onChange={e =>
                   handleInputChange('contactPhone', e.target.value)
                 }
-                placeholder="(11) 99999-9999"
+                placeholder={t('settings.placeholders.contactPhone')}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="Website"
+                label={t('settings.website')}
                 name="website"
                 type="url"
                 value={formData.website || ''}
                 onChange={e => handleInputChange('website', e.target.value)}
-                placeholder="https://empresa.com"
+                placeholder={t('settings.placeholders.website')}
               />
 
               <Input
-                label="CNPJ"
+                label={t('settings.cnpj')}
                 name="cnpj"
                 type="text"
                 value={formData.cnpj || ''}
                 onChange={e => handleInputChange('cnpj', e.target.value)}
-                placeholder="00.000.000/0000-00"
+                placeholder={t('settings.placeholders.cnpj')}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Endereço
+                {t('settings.address')}
               </label>
               <textarea
                 name="address"
                 value={formData.address || ''}
                 onChange={e => handleInputChange('address', e.target.value)}
                 rows={3}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-                placeholder="Endereço completo da empresa"
+                className="block w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder={t('settings.placeholders.address')}
               />
             </div>
 
@@ -272,14 +270,14 @@ export default function SettingsPage() {
                 onClick={() => router.push('/')}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
-                Cancelar
+                {t('forms.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
                 className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
               >
-                {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                {isSaving ? t('settings.saving') : t('settings.saveSettings')}
               </button>
             </div>
           </form>

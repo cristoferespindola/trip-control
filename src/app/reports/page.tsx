@@ -9,45 +9,48 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { useTranslation } from '@/locales'
 
 export default function ReportsPage() {
+  const { t } = useTranslation()
+
   const reports = [
     {
       id: 'trips-by-vehicle',
-      title: 'Viagens por Veículo',
-      description: 'Relatório de viagens agrupadas por veículo',
+      title: t('reports.byVehicle.title'),
+      description: t('reports.byVehicle.description'),
       icon: TruckIcon,
       href: '/reports/trips-by-vehicle',
       color: 'bg-blue-500',
     },
     {
       id: 'trips-by-driver',
-      title: 'Viagens por Motorista',
-      description: 'Relatório de viagens agrupadas por motorista',
+      title: t('reports.byDriver.title'),
+      description: t('reports.byDriver.description'),
       icon: UserIcon,
       href: '/reports/trips-by-driver',
       color: 'bg-green-500',
     },
     {
       id: 'trips-by-client',
-      title: 'Viagens por Cliente',
-      description: 'Relatório de viagens agrupadas por cliente',
+      title: t('reports.byClient.title'),
+      description: t('reports.byClient.description'),
       icon: BuildingOfficeIcon,
       href: '/reports/trips-by-client',
       color: 'bg-purple-500',
     },
     {
       id: 'expenses',
-      title: 'Relatório de Despesas',
-      description: 'Análise detalhada de despesas',
+      title: t('reports.expenses.title'),
+      description: t('reports.expenses.description'),
       icon: CurrencyDollarIcon,
       href: '/reports/expenses',
       color: 'bg-red-500',
     },
     {
       id: 'financial',
-      title: 'Relatório Financeiro',
-      description: 'Análise financeira completa',
+      title: t('reports.financial.title'),
+      description: t('reports.financial.description'),
       icon: ChartBarIcon,
       href: '/reports/financial',
       color: 'bg-orange-500',
@@ -57,11 +60,10 @@ export default function ReportsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatórios</h1>
-        <p className="text-gray-600">
-          Acesse relatórios detalhados sobre viagens, despesas e análise
-          financeira
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {t('reports.title')}
+        </h1>
+        <p className="text-gray-600">{t('reports.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -82,7 +84,7 @@ export default function ReportsPage() {
                 </div>
                 <p className="text-gray-600 text-sm">{report.description}</p>
                 <div className="mt-4 flex items-center text-orange-600 text-sm font-medium">
-                  Acessar relatório
+                  {t('reports.accessReport')}
                   <svg
                     className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform"
                     fill="none"

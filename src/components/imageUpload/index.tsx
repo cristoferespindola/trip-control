@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useTranslation } from '@/locales'
 
 interface ImageUploadProps {
   currentUrl?: string
@@ -20,6 +21,7 @@ export default function ImageUpload({
   folder = 'logos',
   className = '',
 }: ImageUploadProps) {
+  const { t } = useTranslation()
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     currentUrl || null
@@ -42,13 +44,13 @@ export default function ImageUpload({
       'image/svg+xml',
     ]
     if (!allowedTypes.includes(file.type)) {
-      onError('Tipo de arquivo não suportado. Use: JPG, PNG, GIF, WebP ou SVG')
+      onError(t('upload.unsupportedType'))
       return
     }
 
     // Validar tamanho (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      onError('Arquivo muito grande. Máximo 5MB')
+      onError(t('upload.fileTooLarge'))
       return
     }
 
@@ -78,12 +80,12 @@ export default function ImageUpload({
         onUpload(result.url)
         setPreviewUrl(result.url)
       } else {
-        onError(result.error || 'Erro no upload')
+        onError(result.error || t('upload.uploadError'))
         setPreviewUrl(currentUrl || null)
       }
     } catch (error) {
       console.error('Erro no upload:', error)
-      onError('Erro interno no servidor')
+      onError(t('upload.serverError'))
       setPreviewUrl(currentUrl || null)
     } finally {
       setIsUploading(false)
@@ -140,7 +142,7 @@ export default function ImageUpload({
             <PhotoIcon className="h-6 w-6 text-gray-400" />
           )}
           <span className="text-xs text-gray-500 mt-1">
-            {isUploading ? 'Enviando...' : 'Upload'}
+            {isUploading ? t('upload.uploading') : t('upload.upload')}
           </span>
         </div>
 
@@ -157,10 +159,10 @@ export default function ImageUpload({
 
       {/* Informações */}
       <div className="text-xs text-gray-500">
-        <p>Formatos aceitos: JPG, PNG, GIF, WebP, SVG</p>
-        <p>Tamanho máximo: 5MB</p>
+        <p>{t('upload.acceptedFormats')}</p>
+        <p>{t('upload.maxSize')}</p>
         {currentUrl && (
-          <p className="text-orange-600">⚠️ A imagem atual será substituída</p>
+          <p className="text-orange-600">{t('upload.willReplace')}</p>
         )}
       </div>
     </div>

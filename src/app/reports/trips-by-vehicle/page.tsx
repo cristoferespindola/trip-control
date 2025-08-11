@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { TruckIcon } from '@heroicons/react/24/outline'
 import DateFilters from '@/components/dateFilters'
-import StatusTag from '@/components/statusTag'
-import { getTripsByVehicle } from '@/actions/reports'
+import { useTranslation } from '@/locales'
 
 interface VehicleReport {
   vehicleId: string
@@ -27,44 +26,37 @@ interface VehicleReport {
 }
 
 export default function TripsByVehiclePage() {
+  const { t } = useTranslation()
   const [data, setData] = useState<VehicleReport[]>([])
-  const [loading, setLoading] = useState(true)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  const [startDate, setStartDate] = useState<string>('')
+  const [endDate, setEndDate] = useState<string>('')
 
   const fetchData = async () => {
-    setLoading(true)
     try {
-      const result = await getTripsByVehicle(startDate, endDate)
-      if (result.success && result.data) {
+      const params = new URLSearchParams()
+      if (startDate) params.append('startDate', startDate)
+      if (endDate) params.append('endDate', endDate)
+
+      const response = await fetch(`/api/reports/trips-by-vehicle?${params}`)
+      const result = await response.json()
+
+      if (result.success) {
         setData(result.data)
       } else {
         console.error('Error fetching data:', result.error)
       }
     } catch (error) {
       console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
     }
   }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   const handleFilter = () => {
     fetchData()
   }
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <p className="text-gray-500">Carregando relatório...</p>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -72,12 +64,10 @@ export default function TripsByVehiclePage() {
         <div className="flex items-center mb-4">
           <TruckIcon className="h-8 w-8 text-blue-500 mr-3" />
           <h1 className="text-3xl font-bold text-gray-900">
-            Viagens por Veículo
+            {t('reports.byVehicle.title')}
           </h1>
         </div>
-        <p className="text-gray-600">
-          Relatório detalhado de viagens agrupadas por veículo
-        </p>
+        <p className="text-gray-600">{t('reports.byVehicle.description')}</p>
       </div>
 
       <DateFilters
@@ -90,9 +80,7 @@ export default function TripsByVehiclePage() {
 
       {data.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500">
-            Nenhum dado encontrado para o período selecionado
-          </p>
+          <p className="text-gray-500">{t('messages.noData')}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -109,11 +97,16 @@ export default function TripsByVehiclePage() {
                       {item.vehicle?.model} ({item.vehicle?.year})
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {item.tripCount} viagem{item.tripCount !== 1 ? 's' : ''}
+                      {item.tripCount}{' '}
+                      {item.tripCount !== 1
+                        ? t('trips.title')
+                        : t('trips.title').slice(0, -1)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Valor Total</p>
+                    <p className="text-sm text-gray-600">
+                      {t('reports.totalValue')}
+                    </p>
                     <p className="text-lg font-semibold text-gray-900">
                       R$ {item.totalValue.toFixed(2)}
                     </p>
@@ -124,19 +117,25 @@ export default function TripsByVehiclePage() {
               <div className="px-6 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Total de Viagens</p>
+                    <p className="text-sm text-gray-600">
+                      {t('reports.totalTrips')}
+                    </p>
                     <p className="text-2xl font-bold text-gray-900">
                       {item.tripCount}
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Total de Despesas</p>
+                    <p className="text-sm text-gray-600">
+                      {t('reports.totalExpenses')}
+                    </p>
                     <p className="text-2xl font-bold text-red-600">
                       R$ {item.totalExpenses.toFixed(2)}
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600">Valor Final</p>
+                    <p className="text-sm text-gray-600">
+                      {t('reports.finalValue')}
+                    </p>
                     <p className="text-2xl font-bold text-green-600">
                       R$ {item.finalValue.toFixed(2)}
                     </p>
@@ -145,34 +144,34 @@ export default function TripsByVehiclePage() {
 
                 <div className="mt-6">
                   <h4 className="text-md font-semibold text-gray-900 mb-3">
-                    Viagens Detalhadas
+                    {t('reports.detailedTrips')}
                   </h4>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Origem
+                            {t('trips.fields.origin')}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Destino
+                            {t('trips.fields.destination')}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Data
+                            {t('trips.fields.departureDate')}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
+                            {t('table.status')}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Valor
+                            {t('trips.fields.tripValue')}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Despesas
+                            {t('reports.expensesLabel')}
                           </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {item.trips.map(trip => (
+                        {item.trips.map((trip: any) => (
                           <tr key={trip.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {trip.origin}
@@ -186,20 +185,31 @@ export default function TripsByVehiclePage() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <StatusTag status={trip.status} />
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  trip.status === 'COMPLETED'
+                                    ? 'bg-green-100 text-green-800'
+                                    : trip.status === 'IN_PROGRESS'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : trip.status === 'SCHEDULED'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : 'bg-red-100 text-red-800'
+                                }`}
+                              >
+                                {t(`trips.status.${trip.status.toLowerCase()}`)}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              R$ {trip.tripValue?.toFixed(2) || '0.00'}
+                              R$ {trip.value?.toFixed(2) || '0.00'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               R${' '}
                               {trip.expenses
-                                .reduce(
-                                  (sum: number, expense: any) =>
-                                    sum + expense.value,
+                                ?.reduce(
+                                  (sum: number, exp: any) => sum + exp.value,
                                   0
                                 )
-                                .toFixed(2)}
+                                .toFixed(2) || '0.00'}
                             </td>
                           </tr>
                         ))}

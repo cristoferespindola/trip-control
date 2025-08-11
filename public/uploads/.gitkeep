@@ -1,2 +1,5 @@
 # Este arquivo mantém o diretório uploads no git
 # As imagens enviadas não serão versionadas
+
+# This file holds the uploads directory in git
+# Uploaded images will not be versioned
