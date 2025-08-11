@@ -7,6 +7,7 @@ export const en = {
     clients: 'Clients',
     trips: 'Trips',
     users: 'Users',
+    reports: 'Reports',
     logout: 'Logout',
   },
 

@@ -1,8 +1,9 @@
 'use client'
 
-import { Trip, Expense } from '@/types'
+import { Trip } from '@/types'
 import Modal from '@/components/modal'
 import Link from 'next/link'
+import StatusTag from '../../components/statusTag'
 
 interface TripViewModalProps {
   open: boolean
@@ -61,20 +62,13 @@ export default function TripViewModal({
       size="2xl"
     >
       <div className="space-y-6">
-        {/* Informações da Viagem */}
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               Informações da Viagem
             </h3>
 
-            <p className="text-sm text-gray-600">
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}
-              >
-                {getStatusText(trip.status)}
-              </span>
-            </p>
+            <StatusTag status={trip.status} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

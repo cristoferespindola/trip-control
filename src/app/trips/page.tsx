@@ -22,6 +22,7 @@ import TripViewModal from './TripViewModal'
 import Input from '../../components/form/Input'
 import Select from '../../components/form/Select'
 import CitySelect from '../../components/cities'
+import StatusTag from '../../components/statusTag'
 
 export default function TripsPage() {
   const { user } = useAuth()
@@ -182,36 +183,6 @@ export default function TripsPage() {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'SCHEDULED':
-        return 'bg-blue-100 text-blue-800'
-      case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800'
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'SCHEDULED':
-        return 'Agendada'
-      case 'IN_PROGRESS':
-        return 'Em Andamento'
-      case 'COMPLETED':
-        return 'Concluída'
-      case 'CANCELLED':
-        return 'Cancelada'
-      default:
-        return status
-    }
   }
 
   const filteredTrips = trips.filter(trip => {
@@ -505,11 +476,7 @@ export default function TripsPage() {
                           <span>
                             {vehicle?.plate} • {driver?.name} • {client?.name}
                           </span>
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}
-                          >
-                            {getStatusText(trip.status)}
-                          </span>
+                          <StatusTag status={trip.status} />
                         </div>
                         <p className="text-sm text-gray-500">
                           {new Date(trip.departureDate).toLocaleDateString(

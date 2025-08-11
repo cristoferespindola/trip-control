@@ -16,6 +16,7 @@ import {
   BuildingOfficeIcon,
   MapIcon,
   UsersIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -34,6 +35,7 @@ const navigation = [
   { name: 'nav.clients', href: '/clients', icon: BuildingOfficeIcon },
   { name: 'nav.trips', href: '/trips', icon: MapIcon },
   { name: 'nav.users', href: '/users', icon: UsersIcon },
+  { name: 'nav.reports', href: '/reports', icon: ChartBarIcon },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {

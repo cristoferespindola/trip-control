@@ -1,3 +1,12 @@
+export enum StatusEnum {
+  SCHEDULED = 'SCHEDULED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+export type Status = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+export type StatusText = 'Agendada' | 'Em Andamento' | 'Concluída' | 'Cancelada'
+
 export interface User {
   id: string
   username: string
@@ -56,7 +65,7 @@ export interface Trip {
   initialKilometer?: number
   finalKilometer?: number
   tripValue?: number
-  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+  status: StatusEnum
   notes?: string
   vehicleId: string
   driverId: string

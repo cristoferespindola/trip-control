@@ -7,6 +7,7 @@ export const pt = {
     clients: 'Clientes',
     trips: 'Viagens',
     users: 'Usuários',
+    reports: 'Relatórios',
     logout: 'Sair',
   },
 
