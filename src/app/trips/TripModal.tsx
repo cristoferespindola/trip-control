@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Modal from '@/components/modal'
-import { Trip, Vehicle, Driver, Client } from '@/types'
-import Select from '@/components/form/Select'
 import Input from '@/components/form/Input'
+import Select from '@/components/form/Select'
 import TextArea from '@/components/form/TextArea'
-import CitySelect from '@/components/cities'
+import { Trip, Vehicle, Driver, Client } from '@/types'
+import { useTranslation } from '@/locales'
 
 interface TripModalProps {
   open: boolean
@@ -27,70 +27,61 @@ export default function TripModal({
   clients,
   onSubmit,
 }: TripModalProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
+    origin: '',
+    destination: '',
     vehicleId: '',
     driverId: '',
     clientId: '',
-    origin: '',
-    destination: '',
     departureDate: '',
     returnDate: '',
     initialKilometer: '',
     finalKilometer: '',
     tripValue: '',
-    status: 'SCHEDULED' as
-      | 'SCHEDULED'
-      | 'IN_PROGRESS'
-      | 'COMPLETED'
-      | 'CANCELLED',
     notes: '',
   })
 
   useEffect(() => {
-    const formatDate = (date: string | Date) => {
-      try {
-        return new Date(date).toISOString().split('T')[0]
-      } catch (error) {
-        console.error('Error formatting date:', error)
-        return ''
-      }
-    }
-
     if (editingTrip) {
+      const formatDate = (date: string | Date) => {
+        if (!date) return ''
+        const d = new Date(date)
+        return d.toISOString().split('T')[0]
+      }
+
       setFormData({
-        vehicleId: editingTrip.vehicleId,
-        driverId: editingTrip.driverId,
-        clientId: editingTrip.clientId,
-        origin: editingTrip.origin,
-        destination: editingTrip.destination,
+        origin: editingTrip.origin || '',
+        destination: editingTrip.destination || '',
+        vehicleId: editingTrip.vehicleId || '',
+        driverId: editingTrip.driverId || '',
+        clientId: editingTrip.clientId || '',
         departureDate: formatDate(editingTrip.departureDate),
-        tripValue: editingTrip.tripValue?.toString() || '',
         returnDate: editingTrip.returnDate
           ? formatDate(editingTrip.returnDate)
           : '',
         initialKilometer: editingTrip.initialKilometer?.toString() || '',
         finalKilometer: editingTrip.finalKilometer?.toString() || '',
-        status: editingTrip.status,
+        tripValue: editingTrip.tripValue?.toString() || '',
         notes: editingTrip.notes || '',
       })
     } else {
       resetForm()
     }
-  }, [editingTrip?.id])
+  }, [editingTrip])
 
   const resetForm = () => {
     setFormData({
+      origin: '',
+      destination: '',
       vehicleId: '',
       driverId: '',
       clientId: '',
-      origin: '',
-      destination: '',
       departureDate: '',
       returnDate: '',
-      tripValue: '',
       initialKilometer: '',
       finalKilometer: '',
-      status: 'SCHEDULED',
+      tripValue: '',
       notes: '',
     })
   }
@@ -110,95 +101,81 @@ export default function TripModal({
     <Modal
       open={open}
       onClose={handleClose}
-      title={editingTrip ? 'Editar Viagem' : 'Nova Viagem'}
+      title={editingTrip ? t('trips.editTrip') : t('trips.addTrip')}
       size="xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label={t('trips.fields.origin')}
+            name="origin"
+            type="text"
+            value={formData.origin}
+            onChange={e => setFormData({ ...formData, origin: e.target.value })}
+            placeholder=""
+            required
+          />
+
+          <Input
+            label={t('trips.fields.destination')}
+            name="destination"
+            type="text"
+            value={formData.destination}
+            onChange={e =>
+              setFormData({ ...formData, destination: e.target.value })
+            }
+            placeholder=""
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Select
-            label="Veículo"
+            label={t('trips.fields.vehicle')}
             name="vehicleId"
             options={vehicles.map(vehicle => ({
               id: vehicle.id,
-              name: vehicle.plate,
+              name: `${vehicle.plate} - ${vehicle.model}`,
             }))}
             value={formData.vehicleId}
-            required
             onChange={e =>
               setFormData({ ...formData, vehicleId: e.target.value })
             }
+            required
           />
 
           <Select
-            label="Motorista"
+            label={t('trips.fields.driver')}
             name="driverId"
             options={drivers.map(driver => ({
               id: driver.id,
               name: driver.name,
             }))}
             value={formData.driverId}
-            required
             onChange={e =>
               setFormData({ ...formData, driverId: e.target.value })
             }
+            required
           />
 
           <Select
-            label="Cliente"
+            label={t('trips.fields.client')}
             name="clientId"
             options={clients.map(client => ({
               id: client.id,
               name: client.name,
             }))}
             value={formData.clientId}
-            required
             onChange={e =>
               setFormData({ ...formData, clientId: e.target.value })
             }
-          />
-
-          <Select
-            label="Status"
-            name="status"
-            options={[
-              { id: 'SCHEDULED', name: 'Agendada' },
-              { id: 'IN_PROGRESS', name: 'Em Andamento' },
-              { id: 'COMPLETED', name: 'Concluída' },
-              { id: 'CANCELLED', name: 'Cancelada' },
-            ]}
-            value={formData.status}
-            required
-            onChange={e =>
-              setFormData({ ...formData, status: e.target.value as any })
-            }
-          />
-        </div>
-
-        <div>
-          <CitySelect
-            label="Origem"
-            name="origin"
-            value={formData.origin}
-            onChange={value => setFormData({ ...formData, origin: value })}
-            placeholder="Digite a cidade de origem"
-            required
-          />
-        </div>
-
-        <div>
-          <CitySelect
-            label="Destino"
-            name="destination"
-            value={formData.destination}
-            onChange={value => setFormData({ ...formData, destination: value })}
-            placeholder="Digite a cidade de destino"
             required
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Data de Partida"
+            label={t('trips.fields.departureDate')}
             name="departureDate"
             type="date"
             value={formData.departureDate}
@@ -210,7 +187,7 @@ export default function TripModal({
           />
 
           <Input
-            label="Data de Retorno"
+            label={t('trips.fields.returnDate')}
             name="returnDate"
             type="date"
             value={formData.returnDate}
@@ -224,7 +201,7 @@ export default function TripModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Kilometragem Inicial"
+            label={t('trips.fields.initialKilometer')}
             name="initialKilometer"
             type="number"
             value={formData.initialKilometer}
@@ -236,7 +213,7 @@ export default function TripModal({
           />
 
           <Input
-            label="Kilometragem Final"
+            label={t('trips.fields.finalKilometer')}
             name="finalKilometer"
             type="number"
             value={formData.finalKilometer}
@@ -250,7 +227,7 @@ export default function TripModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Valor da Viagem"
+            label={t('trips.fields.tripValue')}
             name="tripValue"
             type="number"
             value={formData.tripValue}
@@ -263,12 +240,12 @@ export default function TripModal({
         </div>
 
         <TextArea
-          label="Observações"
+          label={t('trips.fields.notes')}
           name="notes"
           value={formData.notes}
           onChange={e => setFormData({ ...formData, notes: e.target.value })}
           rows={3}
-          placeholder="Observações sobre a viagem"
+          placeholder={t('trips.fields.notes')}
           required={false}
         />
 
@@ -278,13 +255,13 @@ export default function TripModal({
             onClick={handleClose}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
           >
-            Cancelar
+            {t('forms.cancel')}
           </button>
           <button
             type="submit"
             className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
           >
-            {editingTrip ? 'Atualizar' : 'Criar'}
+            {editingTrip ? t('forms.update') : t('forms.create')}
           </button>
         </div>
       </form>

@@ -1,3 +1,5 @@
+import { useTranslation } from '@/locales'
+
 export default function Select({
   label,
   name,
@@ -13,6 +15,8 @@ export default function Select({
   required: boolean
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <div>
       <label
@@ -30,7 +34,7 @@ export default function Select({
         required={required}
       >
         <option className="text-gray-700" value="">
-          Selecione um {label}
+          {t('forms.select')} {label}
         </option>
         {options.map(option => (
           <option className="text-gray-700" key={option.id} value={option.id}>

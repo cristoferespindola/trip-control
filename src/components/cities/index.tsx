@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Input from '@/components/form/Input'
 import { filterCities, formatCityName } from '../../utils/strings.utils'
+import { useTranslation } from '@/locales'
 
 const searchCities = async (query: string): Promise<any[]> => {
   if (query.length < 2) {
@@ -53,10 +54,11 @@ export default function CitySelect({
   name,
   value,
   onChange,
-  placeholder = 'Digite o nome da cidade',
+  placeholder,
   required = false,
   disabled = false,
 }: CitySelectProps) {
+  const { t } = useTranslation()
   const [cities, setCities] = useState<City[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -134,7 +136,7 @@ export default function CitySelect({
         value={inputValue}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
-        placeholder={placeholder}
+        placeholder={placeholder || t('cities.placeholder')}
         required={required}
         disabled={disabled}
       />
@@ -145,7 +147,9 @@ export default function CitySelect({
           className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
         >
           {isLoading ? (
-            <div className="px-3 py-2 text-sm text-gray-500">Carregando...</div>
+            <div className="px-3 py-2 text-sm text-gray-500">
+              {t('cities.loading')}
+            </div>
           ) : cities.length > 0 ? (
             cities.map((city, index) => (
               <button
@@ -159,7 +163,7 @@ export default function CitySelect({
             ))
           ) : inputValue.length >= 2 ? (
             <div className="px-3 py-2 text-sm text-gray-500">
-              Nenhuma cidade encontrada
+              {t('cities.noCitiesFound')}
             </div>
           ) : null}
         </div>

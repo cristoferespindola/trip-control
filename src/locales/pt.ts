@@ -45,6 +45,10 @@ export const pt = {
     search: 'Buscar',
     filter: 'Filtrar',
     clear: 'Limpar',
+    update: 'Atualizar',
+    create: 'Criar',
+    register: 'Cadastrar',
+    select: 'Selecione',
   },
 
   // Veículos
@@ -119,6 +123,7 @@ export const pt = {
     status: {
       active: 'Ativo',
       inactive: 'Inativo',
+      blocked: 'Bloqueado',
     },
     messages: {
       created: 'Cliente criado com sucesso!',
@@ -144,6 +149,10 @@ export const pt = {
       client: 'Cliente',
       status: 'Status',
       description: 'Descrição',
+      initialKilometer: 'Kilometragem Inicial',
+      finalKilometer: 'Kilometragem Final',
+      tripValue: 'Valor da Viagem',
+      notes: 'Observações',
     },
     status: {
       scheduled: 'Agendada',
@@ -156,6 +165,14 @@ export const pt = {
       updated: 'Viagem atualizada com sucesso!',
       deleted: 'Viagem excluída com sucesso!',
       confirmDelete: 'Tem certeza que deseja excluir esta viagem?',
+      noTripsFound: 'Nenhuma viagem encontrada',
+      noTripsMatchFilters: 'Nenhuma viagem corresponde aos filtros aplicados',
+    },
+    actions: {
+      viewTrip: 'Visualizar viagem',
+      manageExpenses: 'Gerenciar despesas',
+      editTrip: 'Editar viagem',
+      deleteTrip: 'Excluir viagem',
     },
   },
 
@@ -175,10 +192,12 @@ export const pt = {
     roles: {
       admin: 'Administrador',
       user: 'Usuário',
+      manager: 'Gerente',
     },
     status: {
       active: 'Ativo',
       inactive: 'Inativo',
+      suspended: 'Suspenso',
     },
     messages: {
       created: 'Usuário criado com sucesso!',
@@ -223,5 +242,35 @@ export const pt = {
     minLength: 'Mínimo de {min} caracteres',
     maxLength: 'Máximo de {max} caracteres',
     invalidFormat: 'Formato inválido',
+  },
+
+  // Filtros
+  filters: {
+    title: 'Filtros',
+    startDate: 'Data Inicial',
+    endDate: 'Data Final',
+    filter: 'Filtrar',
+    selectStartDate: 'Selecione a data inicial',
+    selectEndDate: 'Selecione a data final',
+  },
+
+  // Cidades
+  cities: {
+    placeholder: 'Digite o nome da cidade',
+    loading: 'Carregando...',
+    noCitiesFound: 'Nenhuma cidade encontrada',
+    errorSearching: 'Erro ao buscar cidades:',
+  },
+
+  // Tabelas
+  table: {
+    name: 'Nome',
+    cpfCnpj: 'CPF/CNPJ',
+    phone: 'Telefone',
+    email: 'E-mail',
+    status: 'Status',
+    actions: 'Ações',
+    address: 'Endereço',
+    completeAddress: 'Endereço completo',
   },
 }

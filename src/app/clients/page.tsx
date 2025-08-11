@@ -1,13 +1,15 @@
 'use client'
 
-import { Client } from '@/types'
 import { useState, useEffect } from 'react'
+import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal'
+import { Client } from '@/types'
+import { useTranslation } from '@/locales'
 
 export default function ClientsPage() {
+  const { t } = useTranslation()
   const [clients, setClients] = useState<Client[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
 
   useEffect(() => {
@@ -17,116 +19,123 @@ export default function ClientsPage() {
   const fetchClients = async () => {
     try {
       const response = await fetch('/api/clients')
-      const data = await response.json()
-      setClients(data)
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data)
+      }
     } catch (error) {
       console.error('Erro ao buscar clientes:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja deletar este cliente?')) return
+    if (confirm(t('clients.messages.confirmDelete'))) {
+      try {
+        const response = await fetch(`/api/clients/${id}`, {
+          method: 'DELETE',
+        })
 
-    try {
-      await fetch(`/api/clients/${id}`, { method: 'DELETE' })
-      fetchClients()
-    } catch (error) {
-      console.error('Erro ao deletar cliente:', error)
+        if (response.ok) {
+          await fetchClients()
+        } else {
+          console.error('Erro ao excluir cliente')
+        }
+      } catch (error) {
+        console.error('Erro ao excluir cliente:', error)
+      }
     }
   }
 
   const handleEdit = (client: Client) => {
     setEditingClient(client)
-    setShowModal(true)
+    setIsModalOpen(true)
   }
 
   const handleNewClient = () => {
     setEditingClient(null)
-    setShowModal(true)
+    setIsModalOpen(true)
   }
 
   const handleCloseModal = () => {
-    setShowModal(false)
+    setIsModalOpen(false)
     setEditingClient(null)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const data = {
+    const clientData = {
       name: formData.get('name') as string,
       cpf: formData.get('cpf') as string,
       cnpj: formData.get('cnpj') as string,
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
-      address: formData.get('address') as string,
       status: formData.get('status') as string,
+      address: formData.get('address') as string,
     }
 
     try {
       const url = editingClient
         ? `/api/clients/${editingClient.id}`
         : '/api/clients'
-
       const method = editingClient ? 'PUT' : 'POST'
 
-      await fetch(url, {
+      const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(clientData),
       })
 
-      handleCloseModal()
-      fetchClients()
+      if (response.ok) {
+        await fetchClients()
+        handleCloseModal()
+      } else {
+        console.error('Erro ao salvar cliente')
+      }
     } catch (error) {
       console.error('Erro ao salvar cliente:', error)
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    )
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Clientes</h1>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {t('clients.title')}
+        </h1>
         <button
           onClick={handleNewClient}
-          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors duration-200"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
         >
-          Novo Cliente
+          <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+          {t('clients.addClient')}
         </button>
       </div>
 
-      {/* Modal */}
       <Modal
-        open={showModal}
+        open={isModalOpen}
         onClose={handleCloseModal}
-        title={editingClient ? 'Editar Cliente' : 'Novo Cliente'}
+        title={editingClient ? t('clients.editClient') : t('clients.addClient')}
         size="xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Nome/Razão Social
+                {t('clients.fields.name')}
               </label>
               <input
                 type="text"
                 name="name"
                 defaultValue={editingClient?.name}
-                required
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="Nome do cliente"
+                placeholder={t('clients.fields.name')}
+                required
               />
             </div>
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
                 CPF
@@ -136,72 +145,80 @@ export default function ClientsPage() {
                 name="cpf"
                 defaultValue={editingClient?.cpf}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="123.456.789-00"
+                placeholder="000.000.000-00"
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                CNPJ
+                {t('clients.fields.cnpj')}
               </label>
               <input
                 type="text"
                 name="cnpj"
                 defaultValue={editingClient?.cnpj}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="12.345.678/0001-90"
+                placeholder="00.000.000/0000-00"
               />
             </div>
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Telefone
+                {t('clients.fields.phone')}
               </label>
               <input
                 type="tel"
                 name="phone"
                 defaultValue={editingClient?.phone}
-                required
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="(11) 99999-9999"
+                placeholder="(00) 00000-0000"
+                required
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Email
+                {t('clients.fields.email')}
               </label>
               <input
                 type="email"
                 name="email"
                 defaultValue={editingClient?.email}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-                placeholder="cliente@email.com"
+                placeholder="email@exemplo.com"
               />
             </div>
+
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Status
+                {t('clients.fields.status')}
               </label>
               <select
                 name="status"
                 defaultValue={editingClient?.status || 'ACTIVE'}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
               >
-                <option value="ACTIVE">Ativo</option>
-                <option value="INACTIVE">Inativo</option>
-                <option value="BLOCKED">Bloqueado</option>
+                <option value="ACTIVE">{t('clients.status.active')}</option>
+                <option value="INACTIVE">{t('clients.status.inactive')}</option>
+                <option value="BLOCKED">{t('clients.status.blocked')}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Endereço
+              {t('table.address')}
             </label>
             <input
               type="text"
               name="address"
               defaultValue={editingClient?.address}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
-              placeholder="Endereço completo"
+              placeholder={t('table.completeAddress')}
             />
           </div>
 
@@ -211,13 +228,13 @@ export default function ClientsPage() {
               onClick={handleCloseModal}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
-              Cancelar
+              {t('forms.cancel')}
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
-              {editingClient ? 'Atualizar' : 'Cadastrar'}
+              {editingClient ? t('forms.update') : t('forms.register')}
             </button>
           </div>
         </form>
@@ -229,22 +246,22 @@ export default function ClientsPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                  Nome
+                  {t('table.name')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  CPF/CNPJ
+                  {t('table.cpfCnpj')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  Telefone
+                  {t('table.phone')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                  Email
+                  {t('table.email')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  Status
+                  {t('table.status')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
-                  Ações
+                  {t('table.actions')}
                 </th>
               </tr>
             </thead>
@@ -281,25 +298,25 @@ export default function ClientsPage() {
                       }`}
                     >
                       {client.status === 'ACTIVE'
-                        ? 'Ativo'
+                        ? t('clients.status.active')
                         : client.status === 'INACTIVE'
-                          ? 'Inativo'
-                          : 'Bloqueado'}
+                          ? t('clients.status.inactive')
+                          : t('clients.status.blocked')}
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(client)}
-                        className="text-purple-600 hover:text-purple-900 px-2 py-1 rounded hover:bg-purple-50"
+                        className="text-orange-600 hover:text-orange-900"
                       >
-                        Editar
+                        <PencilIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(client.id)}
-                        className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
+                        className="text-red-600 hover:text-red-900"
                       >
-                        Deletar
+                        <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
                   </td>

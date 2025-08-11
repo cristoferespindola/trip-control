@@ -45,6 +45,10 @@ export const en = {
     search: 'Search',
     filter: 'Filter',
     clear: 'Clear',
+    update: 'Update',
+    create: 'Create',
+    register: 'Register',
+    select: 'Select',
   },
 
   // Vehicles
@@ -119,6 +123,7 @@ export const en = {
     status: {
       active: 'Active',
       inactive: 'Inactive',
+      blocked: 'Blocked',
     },
     messages: {
       created: 'Client created successfully!',
@@ -144,6 +149,10 @@ export const en = {
       client: 'Client',
       status: 'Status',
       description: 'Description',
+      initialKilometer: 'Initial Kilometer',
+      finalKilometer: 'Final Kilometer',
+      tripValue: 'Trip Value',
+      notes: 'Notes',
     },
     status: {
       scheduled: 'Scheduled',
@@ -156,6 +165,14 @@ export const en = {
       updated: 'Trip updated successfully!',
       deleted: 'Trip deleted successfully!',
       confirmDelete: 'Are you sure you want to delete this trip?',
+      noTripsFound: 'No trips found',
+      noTripsMatchFilters: 'No trips match the applied filters',
+    },
+    actions: {
+      viewTrip: 'View trip',
+      manageExpenses: 'Manage expenses',
+      editTrip: 'Edit trip',
+      deleteTrip: 'Delete trip',
     },
   },
 
@@ -175,10 +192,12 @@ export const en = {
     roles: {
       admin: 'Administrator',
       user: 'User',
+      manager: 'Manager',
     },
     status: {
       active: 'Active',
       inactive: 'Inactive',
+      suspended: 'Suspended',
     },
     messages: {
       created: 'User created successfully!',
@@ -223,5 +242,35 @@ export const en = {
     minLength: 'Minimum {min} characters',
     maxLength: 'Maximum {max} characters',
     invalidFormat: 'Invalid format',
+  },
+
+  // Filters
+  filters: {
+    title: 'Filters',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    filter: 'Filter',
+    selectStartDate: 'Select start date',
+    selectEndDate: 'Select end date',
+  },
+
+  // Cities
+  cities: {
+    placeholder: 'Type the city name',
+    loading: 'Loading...',
+    noCitiesFound: 'No cities found',
+    errorSearching: 'Error searching cities:',
+  },
+
+  // Tables
+  table: {
+    name: 'Name',
+    cpfCnpj: 'CPF/CNPJ',
+    phone: 'Phone',
+    email: 'Email',
+    status: 'Status',
+    actions: 'Actions',
+    address: 'Address',
+    completeAddress: 'Complete address',
   },
 }
