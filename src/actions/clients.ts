@@ -69,12 +69,12 @@ export async function deleteClient(id: string) {
   }
 }
 
-export async function countClients() {
+export async function countClients(): Promise<number> {
   try {
     const count = await prisma.client.count()
-    return { success: true, data: count }
+    return count
   } catch (error) {
     console.error('Error counting clients:', error)
-    return { success: false, error: 'Failed to count clients' }
+    return 0
   }
 }

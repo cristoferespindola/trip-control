@@ -69,12 +69,12 @@ export async function deleteDriver(id: string) {
   }
 }
 
-export async function countDrivers() {
+export async function countDrivers(): Promise<number> {
   try {
     const count = await prisma.driver.count()
-    return { success: true, data: count }
+    return count
   } catch (error) {
     console.error('Error counting drivers:', error)
-    return { success: false, error: 'Failed to count drivers' }
+    return 0
   }
 }

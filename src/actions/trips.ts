@@ -97,13 +97,13 @@ export async function deleteTrip(id: string) {
   }
 }
 
-export async function countTrips() {
+export async function countTrips(): Promise<number> {
   try {
     const count = await prisma.trip.count()
-    return { success: true, data: count }
+    return count
   } catch (error) {
     console.error('Error counting trips:', error)
-    return { success: false, error: 'Failed to count trips' }
+    return 0
   }
 }
 

@@ -69,12 +69,12 @@ export async function deleteVehicle(id: string) {
   }
 }
 
-export async function countVehicles() {
+export async function countVehicles(): Promise<number> {
   try {
     const count = await prisma.vehicle.count()
-    return { success: true, data: count }
+    return count
   } catch (error) {
     console.error('Error counting vehicles:', error)
-    return { success: false, error: 'Failed to count vehicles' }
+    return 0
   }
 }
