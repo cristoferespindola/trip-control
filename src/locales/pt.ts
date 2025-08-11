@@ -9,6 +9,7 @@ export const pt = {
     users: 'Usuários',
     reports: 'Relatórios',
     logout: 'Sair',
+    settings: 'Configurações',
   },
 
   // Dashboard

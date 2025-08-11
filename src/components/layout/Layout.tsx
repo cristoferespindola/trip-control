@@ -17,16 +17,17 @@ import {
   MapIcon,
   UsersIcon,
   ChartBarIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
 import Footer from './Footer'
-import Logo from './logo'
-import LanguageSelector from './LanguageSelector'
+import LanguageSelector from '../languageSelector'
 import { useTranslation } from '@/locales'
 import { Transition } from '@headlessui/react'
+import CompanyLogo from '../company/CompanyLogo'
 
 const navigation = [
   { name: 'nav.dashboard', href: '/', icon: MapIcon },
@@ -81,14 +82,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
                     <div className="flex items-center">
-                      <Logo
+                      <CompanyLogo
                         width={32}
                         height={32}
                         className="text-orange-600"
                       />
-                      <span className="ml-2 text-xl font-bold text-gray-900">
-                        TripControl
-                      </span>
                     </div>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -135,9 +133,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <MenuItem>
                           {({ active }) => (
+                            <Link
+                              href="/settings"
+                              className={`hover:bg-orange-50 flex items-center ${
+                                active ? 'bg-gray-100' : ''
+                              } block px-4 py-2 text-sm text-gray-700 w-full text-left`}
+                            >
+                              <Cog6ToothIcon className="mr-2 h-5 w-5" />
+                              {t('nav.settings')}
+                            </Link>
+                          )}
+                        </MenuItem>
+                        <MenuItem>
+                          {({ active }) => (
                             <button
                               onClick={handleLogout}
-                              className={`hover:bg-orange-50 border-b-2 border-orange-500 ${
+                              className={`hover:bg-orange-50 ${
                                 active ? 'bg-gray-100' : ''
                               } block px-4 py-2 text-sm text-gray-700 w-full text-left`}
                             >

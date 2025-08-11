@@ -4,239 +4,208 @@
 
 # TripControl - Sistema de Controle de Viagens
 
-Sistema completo para gerenciamento de frota, motoristas, clientes e viagens. Desenvolvido com Next.js 14, Prisma, PostgreSQL e Tailwind CSS.
+Sistema completo para gestão de veículos, motoristas, clientes e viagens com suporte a múltiplos idiomas e personalização white label.
 
-## 🚀 Deploy na Vercel
+## 🚀 Funcionalidades
 
-### Pré-requisitos
+- **Gestão de Veículos**: Cadastro, edição e controle de status
+- **Gestão de Motoristas**: Dados pessoais, CNH e status
+- **Gestão de Clientes**: Cadastro de clientes com CPF/CNPJ
+- **Gestão de Viagens**: Agendamento, acompanhamento e relatórios
+- **Gestão de Despesas**: Controle de gastos por viagem
+- **Relatórios**: Relatórios financeiros e por período
+- **Sistema de Usuários**: Controle de acesso e permissões
+- **Internacionalização**: Suporte a português e inglês
+- **White Label**: Personalização completa da marca
 
-- Conta na [Vercel](https://vercel.com)
-- Banco de dados PostgreSQL (recomendamos [Neon](https://neon.tech) ou [Supabase](https://supabase.com))
+## 🎨 Sistema White Label
 
-### Passos para Deploy
+O TripControl oferece personalização completa da marca através do sistema white label:
 
-1. **Fork/Clone o repositório**
+### Configurações Disponíveis
 
-   ```bash
-   git clone <seu-repositorio>
-   cd trip-control
-   ```
+- **Nome da Empresa**: Personalização do nome exibido no sistema
+- **Slogan**: Subtítulo personalizado
+- **Cores**: Cores primária e secundária da marca
+- **Logos**: Upload de logo principal e favicon
+- **Informações de Contato**: Email, telefone, website
+- **Dados da Empresa**: Endereço e CNPJ
 
-2. **Configure o banco de dados**
-   - Crie um banco PostgreSQL na Vercel, Neon ou Supabase
-   - Copie a URL de conexão
+### Sistema de Upload de Imagens
 
-3. **Deploy na Vercel**
-   - Conecte seu repositório na Vercel
-   - Configure as variáveis de ambiente:
-     ```
-     DATABASE_URL=sua_url_do_banco_postgresql
-     ```
-   - Deploy automático será iniciado
+O sistema inclui um gerenciador de uploads inteligente:
 
-4. **Configuração do banco**
-   - Após o primeiro deploy, acesse o projeto
-   - O Prisma irá criar as tabelas automaticamente
-   - Opcional: Execute o seed para dados de exemplo
+#### Características
 
-### Variáveis de Ambiente
+- **Substituição Automática**: Ao fazer upload de uma nova imagem, a antiga é automaticamente deletada
+- **Validação**: Suporta JPG, PNG, GIF, WebP e SVG (máximo 5MB)
+- **Preview**: Visualização em tempo real antes do upload
+- **Organização**: Arquivos organizados por pasta (logos, favicons)
+- **Limpeza Automática**: Script para remover arquivos antigos não utilizados
 
-Crie um arquivo `.env.local` para desenvolvimento local:
+#### Como Usar
 
-```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/trip_control?schema=public"
-```
+1. Acesse a página de configurações (apenas administradores)
+2. Clique na área de upload desejada
+3. Selecione a imagem (a antiga será substituída automaticamente)
+4. Configure as cores e informações
+5. Salve as configurações
 
-## 🛠️ Desenvolvimento Local
+#### Manutenção
 
-### Instalação
+Para limpar uploads antigos:
 
 ```bash
-# Clone o repositório
-git clone <url-do-repositorio>
+npm run cleanup-uploads
+```
+
+Este comando remove arquivos não utilizados com mais de 30 dias.
+
+### Como Configurar
+
+1. Acesse a página de **Configurações** (apenas administradores)
+2. Preencha as informações da sua empresa
+3. Defina as cores da sua marca
+4. Adicione URLs dos logos (opcional)
+5. Salve as configurações
+
+### Aplicação Automática
+
+As configurações são aplicadas automaticamente em:
+
+- Logo e nome no cabeçalho
+- Cores dos botões e elementos interativos
+- Informações de contato no rodapé
+- Loading spinner personalizado
+
+## 🌐 Internacionalização
+
+O sistema suporta múltiplos idiomas:
+
+- **Português (pt)**: Idioma padrão
+- **Inglês (en)**: Tradução completa
+
+### Como Adicionar Novos Idiomas
+
+1. Crie um novo arquivo em `src/locales/` (ex: `es.ts`)
+2. Adicione as traduções seguindo a estrutura existente
+3. Atualize o tipo `Language` em `src/locales/index.tsx`
+4. Adicione o novo idioma ao objeto `translations`
+
+## 🛠️ Tecnologias
+
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL com Prisma ORM
+- **Authentication**: Sistema próprio de autenticação
+- **Icons**: Heroicons
+- **Deploy**: Vercel
+
+## 📦 Instalação
+
+1. Clone o repositório:
+
+```bash
+git clone <repository-url>
 cd trip-control
+```
 
-# Instale as dependências
+2. Instale as dependências:
+
+```bash
 npm install
+```
 
-# Configure o banco de dados
-npm run setup
+3. Configure as variáveis de ambiente:
 
-# Execute o seed (opcional)
-npm run seed
+```bash
+cp .env.example .env
+```
 
-# Inicie o servidor de desenvolvimento
+4. Configure o banco de dados:
+
+```bash
+npx prisma db push
+```
+
+5. Execute os scripts de setup:
+
+```bash
+node scripts/setup-db.js
+node scripts/setup-company-settings.js
+```
+
+6. Inicie o servidor de desenvolvimento:
+
+```bash
 npm run dev
 ```
 
-### Scripts Disponíveis
+## 🔧 Configuração do Banco de Dados
 
-- `npm run dev` - Servidor de desenvolvimento
-- `npm run build` - Build para produção
-- `npm run start` - Servidor de produção
-- `npm run lint` - Verificação de código
-- `npm run seed` - Popula o banco com dados de exemplo
-- `npm run setup` - Configuração inicial do projeto
+### Migrations
 
-## 📊 Funcionalidades
+Para aplicar as migrations:
 
-### 🚗 Gestão de Veículos
+```bash
+npx prisma migrate dev
+```
 
-- Cadastro de veículos com placa, modelo, marca, ano
-- Controle de capacidade e status
-- Histórico de viagens por veículo
+Para resetar o banco:
 
-### 👨‍💼 Gestão de Motoristas
+```bash
+npx prisma migrate reset
+```
 
-- Cadastro completo de motoristas
-- Controle de CNH e status
-- Histórico de viagens por motorista
+### Seed Data
 
-### 🏢 Gestão de Clientes
+Para popular o banco com dados iniciais:
 
-- Cadastro de clientes (pessoa física e jurídica)
-- Controle de CPF/CNPJ e status
-- Histórico de viagens por cliente
-
-### 🗺️ Gestão de Viagens
-
-- Registro completo de viagens
-- Integração com API do IBGE para cidades
-- Controle de custos (combustível, pedágio, outros)
-- Status de viagem (Agendada, Em Andamento, Concluída, Cancelada)
-- Relacionamento com veículo, motorista e cliente
-
-## 🏗️ Arquitetura
-
-### Frontend
-
-- **Next.js 14** com App Router
-- **TypeScript** para tipagem estática
-- **Tailwind CSS** para estilização
-- **Headless UI** para componentes acessíveis
-- **Heroicons** para ícones
-
-### Backend
-
-- **API Routes** do Next.js
-- **Prisma ORM** para banco de dados
-- **PostgreSQL** como banco principal
-
-### Banco de Dados
-
-- **Prisma Schema** com relacionamentos
-- **Migrations** para controle de versão
-- **Seed** para dados iniciais
+```bash
+node scripts/seed.js
+```
 
 ## 📁 Estrutura do Projeto
 
 ```
-trip-control/
-├── src/
-│   ├── app/                 # App Router (Next.js 14)
-│   │   ├── api/            # API Routes
-│   │   ├── vehicles/       # Página de veículos
-│   │   ├── drivers/        # Página de motoristas
-│   │   ├── clients/        # Página de clientes
-│   │   ├── trips/          # Página de viagens
-│   │   ├── layout.tsx      # Layout principal
-│   │   └── page.tsx        # Página inicial
-│   ├── components/         # Componentes reutilizáveis
-│   │   ├── Layout.tsx      # Layout com navegação
-│   │   └── modal/          # Componente modal
-│   ├── lib/               # Utilitários
-│   │   └── prisma.ts      # Cliente Prisma
-│   ├── models/            # Modelos de dados
-│   │   └── cities.ts      # API de cidades
-│   └── types/             # Tipos TypeScript
-│       └── index.ts       # Interfaces
-├── prisma/                # Configuração Prisma
-│   └── schema.prisma      # Schema do banco
-├── scripts/               # Scripts utilitários
-│   ├── setup.sh          # Setup inicial
-│   └── seed.js           # Dados de exemplo
-├── public/               # Arquivos estáticos
-└── package.json          # Dependências
+src/
+├── actions/           # Server Actions
+├── app/              # App Router (Next.js 14)
+│   ├── api/          # API Routes
+│   ├── components/   # Componentes específicos das páginas
+│   └── ...
+├── components/       # Componentes reutilizáveis
+├── contexts/         # Contextos React
+├── lib/             # Utilitários e configurações
+├── locales/         # Arquivos de tradução
+├── types/           # Tipos TypeScript
+└── utils/           # Funções utilitárias
 ```
-
-## 🔧 Configuração do Banco
-
-### PostgreSQL Local (macOS)
-
-```bash
-# Instalar PostgreSQL
-brew install postgresql
-
-# Iniciar serviço
-brew services start postgresql
-
-# Criar banco
-createdb trip_control
-
-# Configurar .env
-echo 'DATABASE_URL="postgresql://cristoferespindola@localhost:5432/trip_control?schema=public"' > .env
-```
-
-### Migrations
-
-```bash
-# Gerar migration
-npx prisma migrate dev --name init
-
-# Aplicar migrations
-npx prisma migrate deploy
-
-# Reset do banco (desenvolvimento)
-npx prisma migrate reset
-```
-
-## 🎨 Interface
-
-### Design System
-
-- **Cores**: Laranja (#f97316) como cor principal
-- **Tipografia**: Sistema de fontes do Tailwind
-- **Componentes**: Modais, formulários, tabelas responsivas
-- **Responsividade**: Mobile-first design
-
-### Componentes Principais
-
-- **Modal**: Sistema de modais deslizantes
-- **Layout**: Navegação com indicador de página ativa
-- **Formulários**: Validação e UX otimizada
-- **Tabelas**: Responsivas com ações inline
 
 ## 🚀 Deploy
 
-### Vercel (Recomendado)
+### Vercel
 
-- Deploy automático via Git
-- Integração com PostgreSQL
-- SSL automático
-- CDN global
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
 
-### Outras Plataformas
+### Outros Provedores
 
-- **Railway**: Suporte nativo ao PostgreSQL
-- **Netlify**: Funciona com adaptações
-- **Heroku**: Suporte completo
+O projeto pode ser deployado em qualquer provedor que suporte Next.js.
 
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença MIT.
 
 ## 🤝 Contribuição
 
 1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
 5. Abra um Pull Request
 
 ## 📞 Suporte
 
-Para suporte, envie um email para [seu-email@exemplo.com] ou abra uma issue no GitHub.
-
----
-
-Desenvolvido com ❤️ usando Next.js, Prisma e Tailwind CSS.
+Para suporte, entre em contato através do email configurado no sistema ou abra uma issue no repositório.

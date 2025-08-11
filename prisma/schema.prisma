@@ -139,6 +139,26 @@ model Expense {
   @@map("expenses")
 }
 
+model CompanySettings {
+  id                String   @id @default(cuid())
+  companyName       String   @default("TripControl")
+  companySlogan     String?  @default("Sistema de Controle de Viagens")
+  primaryColor      String   @default("#ea580c") // orange-600
+  secondaryColor    String   @default("#f97316") // orange-500
+  logoUrl           String?
+  faviconUrl        String?
+  contactEmail      String?
+  contactPhone      String?
+  website           String?
+  address           String?
+  cnpj              String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("company_settings")
+}
+
 enum UserRole {
   ADMIN
   MANAGER

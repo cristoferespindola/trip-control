@@ -123,3 +123,21 @@ export interface AuthContextType {
   logout: () => void
   isLoading: boolean
 }
+
+export interface CompanySettings {
+  id: string
+  companyName: string
+  companySlogan?: string
+  primaryColor: string
+  secondaryColor: string
+  logoUrl?: string
+  faviconUrl?: string
+  contactEmail?: string
+  contactPhone?: string
+  website?: string
+  address?: string
+  cnpj?: string
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+}

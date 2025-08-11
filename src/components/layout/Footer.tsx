@@ -1,8 +1,10 @@
 import Image from 'next/image'
 import { useTranslation } from '@/locales'
+import { useCompanySettings } from '@/contexts/CompanySettingsContext'
 
 export default function Footer() {
   const { t } = useTranslation()
+  const { settings } = useCompanySettings()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -15,6 +17,17 @@ export default function Footer() {
               {t('footer.developedBy')} - {currentYear}
             </span>
           </div>
+          {settings?.contactEmail && (
+            <div className="text-sm text-gray-600">
+              <a
+                href={`mailto:${settings.contactEmail}`}
+                className="hover:text-gray-900"
+                style={{ color: settings.primaryColor }}
+              >
+                {settings.contactEmail}
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </footer>

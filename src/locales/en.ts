@@ -9,6 +9,7 @@ export const en = {
     users: 'Users',
     reports: 'Reports',
     logout: 'Logout',
+    settings: 'Settings',
   },
 
   // Dashboard
