@@ -2,6 +2,7 @@
 
 import { Trip, Expense } from '@/types'
 import Modal from '@/components/modal'
+import Link from 'next/link'
 
 interface TripViewModalProps {
   open: boolean
@@ -62,74 +63,88 @@ export default function TripViewModal({
       <div className="space-y-6">
         {/* Informações da Viagem */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Informações da Viagem
-          </h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Informações da Viagem
+            </h3>
+
+            <p className="text-sm text-gray-600">
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}
+              >
+                {getStatusText(trip.status)}
+              </span>
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-600">
                 <strong>Origem:</strong> {trip.origin}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Destino:</strong> {trip.destination}
-              </p>
-              <p className="text-sm text-gray-600">
                 <strong>Data de Partida:</strong>{' '}
                 {new Date(trip.departureDate).toLocaleDateString('pt-BR')}
               </p>
-              {trip.returnDate && (
-                <p className="text-sm text-gray-600">
-                  <strong>Data de Retorno:</strong>{' '}
-                  {new Date(trip.returnDate).toLocaleDateString('pt-BR')}
-                </p>
-              )}
+
+              <p className="text-sm text-gray-600">
+                <strong>Kilometragem Inicial:</strong>{' '}
+                {trip.initialKilometer
+                  ? trip.initialKilometer + ' km'
+                  : 'Não informado'}{' '}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">
-                <strong>Status:</strong>{' '}
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(trip.status)}`}
-                >
-                  {getStatusText(trip.status)}
-                </span>
+                <strong>Destino:</strong> {trip.destination}
               </p>
-              {trip.initialKilometer && (
-                <p className="text-sm text-gray-600">
-                  <strong>Kilometragem Inicial:</strong> {trip.initialKilometer}{' '}
-                  km
-                </p>
-              )}
-              {trip.finalKilometer && (
-                <p className="text-sm text-gray-600">
-                  <strong>Kilometragem Final:</strong> {trip.finalKilometer} km
-                </p>
-              )}
+
+              <p className="text-sm text-gray-600">
+                <strong>Data da Entrega:</strong>{' '}
+                {trip.returnDate
+                  ? new Date(trip.returnDate).toLocaleDateString('pt-BR')
+                  : 'Não informado'}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Kilometragem Final:</strong>{' '}
+                {trip.finalKilometer
+                  ? trip.finalKilometer + ' km'
+                  : 'Não informado'}
+              </p>
               {trip.initialKilometer && trip.finalKilometer && (
                 <p className="text-sm text-gray-600">
                   <strong>Distância Percorrida:</strong>{' '}
                   {trip.finalKilometer - trip.initialKilometer} km
                 </p>
               )}
-              {trip.tripValue && trip.expenses && trip.expenses.length > 0 && (
-                <>
-                  <p className="text-sm text-gray-600">
-                    <strong>Total de Despesas:</strong> R${' '}
-                    {trip.expenses
-                      .reduce((total, expense) => total + expense.value, 0)
-                      .toFixed(2)}
-                  </p>
-                  <p className="text-sm font-semibold text-green-600">
-                    <strong>Valor Final:</strong> R${' '}
-                    {(
-                      trip.tripValue -
-                      trip.expenses.reduce(
-                        (total, expense) => total + expense.value,
-                        0
-                      )
-                    ).toFixed(2)}
-                  </p>
-                </>
-              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Faturamento da Viagem
+            </h3>
+            <p className="text-lg font-semibold text-gray-900">
+              Lucro: R${' '}
+              {trip?.tripValue
+                ? (trip?.tripValue - totalExpenses).toFixed(2)
+                : '0.00'}
+            </p>
+          </div>
+          <div className="flex justify-between items-center mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">
+                <strong>Valor da Viagem:</strong> R${' '}
+                {trip?.tripValue ? trip?.tripValue?.toFixed(2) : '0.00'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">
+                <strong>Total de Despesas:</strong> R${' '}
+                {trip?.expenses ? totalExpenses.toFixed(2) : '0.00'}
+              </p>
             </div>
           </div>
         </div>
@@ -138,30 +153,36 @@ export default function TripViewModal({
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             Participantes
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-gray-900">Veículo</p>
-              <p className="text-sm text-gray-600">{trip.vehicle?.plate}</p>
-              <p className="text-sm text-gray-600">
-                {trip.vehicle?.brand} {trip.vehicle?.model}
-              </p>
-              <p className="text-sm text-gray-600">Ano: {trip.vehicle?.year}</p>
+              <Link
+                href={`/vehicles/${trip.vehicle?.id}`}
+                className="text-sm text-gray-600 underline"
+              >
+                <p className="text-sm text-gray-600">{trip.vehicle?.plate}</p>
+              </Link>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Motorista</p>
-              <p className="text-sm text-gray-600">{trip.driver?.name}</p>
+              <Link
+                href={`/drivers/${trip.driver?.id}`}
+                className="text-sm text-gray-600 underline"
+              >
+                <p className="text-sm text-gray-600">{trip.driver?.name}</p>
+              </Link>
               <p className="text-sm text-gray-600">CNH: {trip.driver?.cnh}</p>
               <p className="text-sm text-gray-600">Tel: {trip.driver?.phone}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Cliente</p>
-              <p className="text-sm text-gray-600">{trip.client?.name}</p>
+              <Link
+                href={`/clients/${trip.client?.id}`}
+                className="text-sm text-gray-600 underline"
+              >
+                <p className="text-sm text-gray-600">{trip.client?.name}</p>
+              </Link>
               <p className="text-sm text-gray-600">Tel: {trip.client?.phone}</p>
-              {trip.client?.email && (
-                <p className="text-sm text-gray-600">
-                  Email: {trip.client.email}
-                </p>
-              )}
             </div>
           </div>
         </div>
