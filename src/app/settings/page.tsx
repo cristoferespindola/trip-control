@@ -156,7 +156,7 @@ export default function SettingsPage() {
                     onChange={e =>
                       handleInputChange('primaryColor', e.target.value)
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                    className="flex-1 px-3 py-2 border text-gray-700 border-gray-300 rounded-md"
                     placeholder="#ea580c"
                   />
                 </div>
@@ -181,7 +181,7 @@ export default function SettingsPage() {
                     onChange={e =>
                       handleInputChange('secondaryColor', e.target.value)
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                    className="flex-1 px-3 py-2 border text-gray-700 border-gray-300 rounded-md"
                     placeholder="#f97316"
                   />
                 </div>

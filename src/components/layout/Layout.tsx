@@ -28,6 +28,7 @@ import LanguageSelector from '../languageSelector'
 import { useTranslation } from '@/locales'
 import { Transition } from '@headlessui/react'
 import CompanyLogo from '../company/CompanyLogo'
+import DynamicColorProvider from '../DynamicColorProvider'
 
 const navigation = [
   { name: 'nav.dashboard', href: '/', icon: MapIcon },
@@ -74,6 +75,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <DynamicColorProvider />
       <Disclosure as="nav" className="bg-white shadow">
         {({ open }) => (
           <>
@@ -98,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           href={item.href}
                           className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium hover:bg-orange-50 hover:border-orange-500 ${
                             isActive
-                              ? 'border-orange-500 text-gray-900'
+                              ? 'border-[var(--color-primary)] text-gray-900'
                               : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                           }`}
                         >
