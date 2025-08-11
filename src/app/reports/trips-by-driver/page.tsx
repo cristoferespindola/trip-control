@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { UserIcon } from '@heroicons/react/24/outline'
-import Input from '@/components/form/Input'
-import DateFilters from '../../../components/dateFilters'
+import DateFilters from '@/components/dateFilters'
+import StatusTag from '@/components/statusTag'
+import { getTripsByDriver } from '@/actions/reports'
 
 interface DriverReport {
   driverId: string
@@ -12,7 +13,13 @@ interface DriverReport {
     name: string
     cnh: string
     phone: string
-  }
+    cpf: string
+    email: string | null
+    address: string | null
+    status: string
+    createdAt: Date
+    updatedAt: Date
+  } | null
   tripCount: number
   totalValue: number
   totalExpenses: number
@@ -29,13 +36,12 @@ export default function TripsByDriverPage() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (startDate) params.append('startDate', startDate)
-      if (endDate) params.append('endDate', endDate)
-
-      const response = await fetch(`/api/reports/trips-by-driver?${params}`)
-      const result = await response.json()
-      setData(result)
+      const result = await getTripsByDriver(startDate, endDate)
+      if (result.success && result.data) {
+        setData(result.data)
+      } else {
+        console.error('Error fetching data:', result.error)
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -49,26 +55,6 @@ export default function TripsByDriverPage() {
 
   const handleFilter = () => {
     fetchData()
-  }
-
-  const getStatusText = (status: string) => {
-    const statusMap: { [key: string]: string } = {
-      SCHEDULED: 'Agendada',
-      IN_PROGRESS: 'Em Andamento',
-      COMPLETED: 'Concluída',
-      CANCELLED: 'Cancelada',
-    }
-    return statusMap[status] || status
-  }
-
-  const getStatusColor = (status: string) => {
-    const colorMap: { [key: string]: string } = {
-      SCHEDULED: 'bg-blue-100 text-blue-800',
-      IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
-      COMPLETED: 'bg-green-100 text-green-800',
-      CANCELLED: 'bg-red-100 text-red-800',
-    }
-    return colorMap[status] || 'bg-gray-100 text-gray-800'
   }
 
   if (loading) {
@@ -120,10 +106,10 @@ export default function TripsByDriverPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {item.driver.name}
+                      {item.driver?.name}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      CNH: {item.driver.cnh} | Tel: {item.driver.phone}
+                      CNH: {item.driver?.cnh} | Tel: {item.driver?.phone}
                     </p>
                     <p className="text-sm text-gray-600">
                       {item.tripCount} viagem{item.tripCount !== 1 ? 's' : ''}
@@ -209,11 +195,7 @@ export default function TripsByDriverPage() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(trip.status)}`}
-                              >
-                                {getStatusText(trip.status)}
-                              </span>
+                              <StatusTag status={trip.status} />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               R$ {trip.tripValue?.toFixed(2) || '0.00'}

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TruckIcon, CalendarIcon } from '@heroicons/react/24/outline'
-import Input from '@/components/form/Input'
-import DateFilters from '../../../components/dateFilters'
-import StatusTag from '../../../components/statusTag'
+import { TruckIcon } from '@heroicons/react/24/outline'
+import DateFilters from '@/components/dateFilters'
+import StatusTag from '@/components/statusTag'
+import { getTripsByVehicle } from '@/actions/reports'
 
 interface VehicleReport {
   vehicleId: string
@@ -14,7 +14,11 @@ interface VehicleReport {
     brand: string
     model: string
     year: number
-  }
+    status: string
+    capacity: number
+    createdAt: Date
+    updatedAt: Date
+  } | null
   tripCount: number
   totalValue: number
   totalExpenses: number
@@ -31,13 +35,12 @@ export default function TripsByVehiclePage() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (startDate) params.append('startDate', startDate)
-      if (endDate) params.append('endDate', endDate)
-
-      const response = await fetch(`/api/reports/trips-by-vehicle?${params}`)
-      const result = await response.json()
-      setData(result)
+      const result = await getTripsByVehicle(startDate, endDate)
+      if (result.success && result.data) {
+        setData(result.data)
+      } else {
+        console.error('Error fetching data:', result.error)
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -102,8 +105,8 @@ export default function TripsByVehiclePage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {item.vehicle.plate} - {item.vehicle.brand}{' '}
-                      {item.vehicle.model} ({item.vehicle.year})
+                      {item.vehicle?.plate} - {item.vehicle?.brand}{' '}
+                      {item.vehicle?.model} ({item.vehicle?.year})
                     </h3>
                     <p className="text-sm text-gray-600">
                       {item.tripCount} viagem{item.tripCount !== 1 ? 's' : ''}
