@@ -22,29 +22,46 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
+    console.log('Creating driver with data:', body)
+
+    // Validação básica
+    if (!body.name || !body.cpf || !body.cnh || !body.phone) {
+      return NextResponse.json(
+        { error: 'Nome, CPF, CNH e telefone são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
     const driver = await prisma.driver.create({
       data: {
         name: body.name,
         cpf: body.cpf,
         cnh: body.cnh,
         phone: body.phone,
-        email: body.email,
-        address: body.address,
+        email: body.email || null,
+        address: body.address || null,
         status: body.status || 'ACTIVE',
       },
     })
 
+    console.log('Driver created successfully:', driver.id)
     return NextResponse.json(driver, { status: 201 })
   } catch (error: any) {
+    console.error('Error creating driver:', error)
+
     if (error.code === 'P2002') {
+      const field = error.meta?.target?.[0] || 'campo'
       return NextResponse.json(
-        { error: 'CPF ou CNH já cadastrado' },
+        { error: `${field} já cadastrado` },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Erro ao criar motorista' },
+      {
+        error: 'Erro ao criar motorista',
+        details: error.message,
+      },
       { status: 500 }
     )
   }

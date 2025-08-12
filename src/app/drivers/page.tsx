@@ -57,9 +57,11 @@ export default function DriversPage() {
     const formData = new FormData(e.currentTarget)
     const data = {
       name: formData.get('name') as string,
+      cpf: formData.get('cpf') as string,
       cnh: formData.get('cnh') as string,
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
+      address: formData.get('address') as string,
       status: formData.get('status') as string,
     }
 
@@ -127,6 +129,19 @@ export default function DriversPage() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
+                CPF
+              </label>
+              <input
+                type="text"
+                name="cpf"
+                defaultValue={editingDriver?.cpf}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
+                placeholder="123.456.789-00"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                 CNH
               </label>
               <input
@@ -159,7 +174,6 @@ export default function DriversPage() {
                 type="email"
                 name="email"
                 defaultValue={editingDriver?.email}
-                required
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
                 placeholder="joao@email.com"
               />
@@ -178,6 +192,19 @@ export default function DriversPage() {
                 <option value="ON_TRIP">Em Viagem</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Endereço
+            </label>
+            <input
+              type="text"
+              name="address"
+              defaultValue={editingDriver?.address}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-gray-900"
+              placeholder="Rua das Flores, 123 - São Paulo/SP"
+            />
           </div>
 
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">

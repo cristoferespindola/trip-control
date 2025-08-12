@@ -7,6 +7,8 @@ import Select from '@/components/form/Select'
 import TextArea from '@/components/form/TextArea'
 import { Trip, Vehicle, Driver, Client } from '@/types'
 import { useTranslation } from '@/locales'
+import CitySelect from '@/components/cities'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface TripModalProps {
   open: boolean
@@ -28,12 +30,15 @@ export default function TripModal({
   onSubmit,
 }: TripModalProps) {
   const { t } = useTranslation()
+  const { user } = useAuth()
+
   const [formData, setFormData] = useState({
     origin: '',
     destination: '',
     vehicleId: '',
     driverId: '',
     clientId: '',
+    userId: user?.id || '',
     departureDate: '',
     returnDate: '',
     initialKilometer: '',
@@ -56,6 +61,7 @@ export default function TripModal({
         vehicleId: editingTrip.vehicleId || '',
         driverId: editingTrip.driverId || '',
         clientId: editingTrip.clientId || '',
+        userId: user?.id || '',
         departureDate: formatDate(editingTrip.departureDate),
         returnDate: editingTrip.returnDate
           ? formatDate(editingTrip.returnDate)
@@ -77,6 +83,7 @@ export default function TripModal({
       vehicleId: '',
       driverId: '',
       clientId: '',
+      userId: user?.id || '',
       departureDate: '',
       returnDate: '',
       initialKilometer: '',
@@ -106,24 +113,20 @@ export default function TripModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
+          <CitySelect
             label={t('trips.fields.origin')}
             name="origin"
-            type="text"
             value={formData.origin}
-            onChange={e => setFormData({ ...formData, origin: e.target.value })}
+            onChange={e => setFormData({ ...formData, origin: e })}
             placeholder=""
             required
           />
 
-          <Input
+          <CitySelect
             label={t('trips.fields.destination')}
             name="destination"
-            type="text"
             value={formData.destination}
-            onChange={e =>
-              setFormData({ ...formData, destination: e.target.value })
-            }
+            onChange={e => setFormData({ ...formData, destination: e })}
             placeholder=""
             required
           />
